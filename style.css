@@ -4,6 +4,7 @@ header {
   background-size:cover;
   background-repeat:no-repeat;
   background-color:transparent;
+  background-position:center;
   border-radius:0px 0px 10px 10px;
   filter:sepia(30%);
 }
