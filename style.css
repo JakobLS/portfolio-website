@@ -1,11 +1,11 @@
 header {
   height: 720px;
-  width:100vw;
+  width: 100vw;
   background: url(images/desert-road-bending-left.jpg);
   background-size:cover;
   background-repeat:no-repeat;
   background-color:transparent;
-  background-position:center;
+  background-position: center;
   border-radius:0px 0px 10px 10px;
   filter:sepia(30%);
 }
@@ -32,6 +32,7 @@ header {
   padding-top:10%;
   padding-bottom:2%;
   width:350px;
+  height: 100%;
   text-align:center;
   margin-left:auto;
   margin-right:auto;
@@ -41,15 +42,17 @@ header {
   color:gray;
   font-size:90%;
   font-family:"Comic Sans MS", sans-serif;
+  background-color:white;
 }
 
 .me-image-box {
   padding-top:3%;
-  padding-bottom:8%;
+  padding-bottom:4%;
   width:350px;
   text-align:center;
   margin-left:auto;
   margin-right:auto;
+  background-color:white;
 }
 
 .me-image {
@@ -68,12 +71,12 @@ a:hover   {color:#8BB1A3;}
 a:active  {color:gray;}
 
 .links-box {
-  padding-top:0;
   padding-bottom:5%;
   width:350px;
   text-align:center;
   margin-left:auto;
   margin-right:auto;
+  background-color:white;
 }
 
 main div a {
@@ -86,9 +89,13 @@ main div a {
   text-align:left;
   width:100%;
   position:relative;
+  /*bottom:0;
+  left:0;
+  z-index:0;*/
+  background-color:white;
 }
 
-footer p {
+footer div p {
   font-family: 'Comic Sans MS', sans-serif;
   padding:1% 0% 2% 5%;
   font-size:80%;
