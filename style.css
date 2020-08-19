@@ -1,0 +1,225 @@
+/*Import extra font family*/
+@import url('https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@400;700&family=Montserrat:wght@300;700&family=Nanum+Pen+Script&display=swap');
+
+
+header {
+  height: 100vh;
+  width: 100vw;
+  background: url("images/desert-road-bending-left.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-color: transparent;
+  background-position: center;
+  border-radius: 0 0 10px 10px;
+  filter: sepia(30%)
+}
+
+.welcome-box h2 {
+  color: ghostwhite;
+  font-size: 150%;
+  font-family: 'Montserrat', verdana, sans-serif;
+  text-align: center;
+  letter-spacing: 0.5px;
+  padding-top: 12%;
+  margin: 0;
+}
+
+.welcome-box h1 {
+  color: ghostwhite;
+  font-size: 300%;
+  font-family: 'Montserrat', verdana, sans-serif;
+  text-align: center;
+  letter-spacing: 0.5px;
+  margin-top: 0.5%;
+  margin-bottom: 0%;
+}
+
+.me-image-box {
+  padding-top: 0%;
+  padding-bottom: 4%;
+  width: 350px;
+
+  /*Align the picture in the center*/
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.me-image {
+  /*Add filter to the image*/
+  filter: sepia(40%);
+}
+
+.first-section {
+  display: table;
+  width: 350px;
+  height: 100%;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/*Display text vertically centered aligned*/
+.first-section div {
+  display: table-cell;
+  vertical-align:middle;
+}
+
+.collaboration {
+  padding-top: 1%;
+  padding-bottom: 4%;
+}
+
+p {
+  color:#A9A9A9;
+  font-size:90%;
+  font-family: 'Montserrat', verdana, sans-serif;
+  font-weight: 500;
+}
+
+hr {
+  height: 2px;
+  width: 120px;
+  background-color: #98BBA5;
+  border: 1px solid #98BBA5;
+  border-radius: 5px;
+}
+
+.projects-listing-heading {
+  margin-bottom: 4%;
+}
+
+.projects-listing-heading h1 {
+  color: #98BBA5;
+  font-size: 150%;
+  font-family: 'Montserrat', verdana, sans-serif;
+  text-align: center;
+}
+
+.margin {
+  margin-top: 20%;
+  margin-bottom: 0%;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  padding: 20% 0 0 0; /* Add padding between projects when displayed on smaller screens */
+}
+
+.item-right {
+  /*Minor vertical margin between project image and text on smaller screens*/
+  margin: 1% 5% 1% 5%;
+}
+
+.item-right p {
+  text-align: center;
+}
+
+.item-right h2 {
+  text-align: center;
+  color: #98BBA5;
+  font-size: 130%;
+  font-family: 'Montserrat', verdana, sans-serif;
+}
+
+.item-left {
+  /*Minor vertical margin between project image and text on smaller screens*/
+  margin: 1% 5% 1% 5%;
+}
+
+.item-left img {
+  border-radius: 10px;
+  width: 100%;
+}
+
+.footer {
+  padding: 1% 0 2% 5%;
+  font-size: 80%;
+}
+
+.connect-links-box {
+  padding-bottom: 2%;
+  width: 350px;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 90%;
+  font-family: 'Montserrat', verdana, sans-serif;
+}
+
+.connect-links-box a {
+  padding: 0px 15px 0px 15px;
+}
+
+a:link    {color: #A9A9A9; font-weight: 600; text-decoration: none}
+a:visited {color: #A9A9A9;}
+a:hover   {color: #98BBA5;}
+a:active  {color: #A9A9A9;}
+
+
+.window-height {
+  height: 100vh;
+}
+
+
+#center-align {
+  display: flex;
+  align-items:center;
+}
+
+
+
+
+
+ /* Specifications for when window width is larger than 800px */
+@media all and (min-width: 800px) {
+  .group {
+    flex-direction: row;
+    padding: 0;
+  }
+
+  .item-right {
+    flex: 1.5;
+    margin: 3% 20% 3% 1%;
+  }
+
+  .item-right p {
+    text-align: left;
+  }
+
+  .item-right h2 {
+    text-align: left;
+  }
+
+  .item-left {
+    flex: 1.5;
+    margin: 3% 1% 3% 20%;
+  }
+
+  /* Center the image div container */
+  #center-container {
+    display: flex;
+    align-items: center;
+  }
+}
+
+
+
+
+/*Display Copyright content only on wider screens such as Desktops*/
+#content-mobile {display: none;
+}
+@media (max-width: 800px) {
+  #content-desktop {
+    display:none;
+  }
+  #content-mobile {
+    display: block;
+  }
+}
+
+
+
+
+
