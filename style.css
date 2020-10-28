@@ -51,7 +51,7 @@ header {
 }
 
 
-main section div div div a:nth-child(1)[target="_blank"]:after {
+a:nth-child(1)[class="link-icon"]:after {
   content: "";
   background-image: url("https://developer.mozilla.org/static/general/external-link.fb3c293b9226.svg");
   background-size: 100% 100%;
