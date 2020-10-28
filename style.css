@@ -50,6 +50,20 @@ header {
   filter: sepia(40%);
 }
 
+
+.window-height a:nth-child(1)[target="_blank"]:after {
+  content: "";
+  background-image: url("https://developer.mozilla.org/static/general/external-link.fb3c293b9226.svg");
+  background-size: 100% 100%;
+  display: inline-block;
+  filter: invert(77%) sepia(0%) saturate(191%) hue-rotate(149deg) brightness(95%) contrast(71%);
+  height: 12px;
+  width: 12px;
+  position:relative;
+  padding-left: 1%;
+  margin-bottom: -1.5px;
+}
+
 .first-section {
   display: table;
   width: 350px;
