@@ -25,7 +25,7 @@
               <h2></h2>
               <p>I'm an engineer and data scientist with a bit of a taste for web development. Originally from Sweden, currently residing in Madrid while building on my next <a href="http://www.paulgraham.com/notnot.html" target="_blank" class="link-icon" alt="Why to not not start a startup">venture</a>, which will require <a href="http://www.paulgraham.com/before.html" target="_blank" alt="Before the Startup">knowledge</a> aquired in all three of these fields.</p>
 
-              <p>The purpose of this website is twofold: to create and connect an AI model (Data Science) with a user interface (Web Development), and to offer a showcase for some of the projects I've worked on so far. Take a scroll!</p>
+              <p>The purpose of this website is mainly to offer a showcase for some of the projects I've worked on so far but will hopefully expand over time.</p> <p>Feel free to take a scroll.</p>
             </div>
           </div>
         </div>
@@ -45,10 +45,50 @@
         <div class="group">
           <!--First project-->
           <div class="item-left" id="center-container">
-            <img src="images/cancerseek1-resized.jpg" alt="CancerSEEK" width="300">
+            <img src="images/tyre-maintenence.jpg" alt="Tyre Thread Depth Prediction" width="300" height="350">
+          </div>
+          <div class="item-right">
+            <h2>Predicting Tyre Thread Depth on a Small Dataset using Deep Learning</a></h2>
+
+            <p><i>2021</i></p>
+
+            <p>Maintaining proper wheel quality on your car or truck is incredible important for good road safethy. If you're owning a larger fleet of vehicles, taking them off the road for maintenence can mean significant costs. Being able to better plan when maintenence is needed and on what parts of the vehicle through smarter logging can thus save companies significant amounts.</p>
+
+            <p>In this project we collected images of tyres (315 in total) to test the hypothesis on whether it's possible to predict the tyre thread depth of single camera input images using deep learning techniques. Despite the small dataset, we chose a design that can be scaled up to millions of samples with virtual no changes to the source code, which will be useful during further work.</p>
+
+            <p>Although the collected dataset was very small, this early-stage experiment indicates that it <i>is</i> possible to predict the thread depth of tyres using deep learning techniques. Moving forward, more data should be collected to verify the results with higher confidence.</p>
+
+          </div>
+        </div>
+
+        <div class="group">
+          <!--Second project-->
+          <div class="item-left" id="center-container">
+            <img src="images/cancer-collage.jpg" alt="Skin Cancer detection" width="300" height="350">
+          </div>
+          <div class="item-right">
+            <h2>Detecting Melanoma Skin Cancer with Computer Vision</h2>
+
+            <p><i>2021</i></p>
+
+            <p>There were around 300,000 newly diagnosed <i>melanoma</i> and one million <i>non-melanoma</i> skin cancer cases worldwide in 2018. These numbers are estimated to increase the coming years. My home country Sweden, is ranked 6th in terms of cancer rates per capita, averaged over both sexes. A combination of white skin color and a society that considers being sun-tanned to be attractive likely contributes to the high ranking.</p>
+
+            <p>Being able to quickly and accurately check a spot on the skin can thus be desirable for many. Using deep learning, I will thus test the hypothesis on whether it's possible to classify melanoma from non-melanoma skin cancer. Due to hardware restrictions, only a smaller dataset was chosen (3,300 images), but the current design will be able to process larger datasets with only minor changes to the code.</p>
+
+            <p>I successfully show that it is possible to classify melanoma from non-melanoma skin cancer samples. With the current dataset, a smaller model performs just as well as the larger and should this be preferred while, if there is a way to collect more data, the larger model will likely do significantly better.</p>
+
+          </div>
+        </div>
+
+        <div class="group">
+          <!--Third project-->
+          <div class="item-left" id="center-container">
+            <img src="images/cancerseek1-resized.jpg" alt="CancerSEEK" width="300" height="350">
           </div>
           <div class="item-right">
             <h2><a href="https://github.com/JakobLS/CancerSEEK" style="color:#98BBA5" target="_blank">Cancer Detection Through Multi-Analyte Blood Test</a></h2>
+
+            <p><i>2020</i></p>
 
             <p><a href="https://thrivedetect.com/" target="_blank">Thrive Earlier Detection</a> launched in early 2019 with $110M of Series A financing. The project piqued my interest; I thought I could provide an improved cancer detection model with their published proteomics and genomics data.</p>
 
@@ -59,12 +99,14 @@
         </div>
 
         <div class="group">
-          <!--Second project-->
+          <!--Fourth project-->
           <div class="item-left" id="center-container">
             <img src="images/cancerseek2-resized.jpg" alt="CancerSEEK Follow-up" width="300">
           </div>
           <div class="item-right">
             <h2><a href="https://github.com/JakobLS/CancerSEEK-Folllow-up" style="color:#98BBA5" target="_blank">Assessing Abnormal Chromosomes using Machine Learning</a></h2>
+
+            <p><i>2020</i></p>
 
             <p>This work was similar to the multi-analyte blood test project, but focused on improving specificity by evaluating abnormal blood chromosome counts. Specificity was indeed improved to 99.8%, slightly higher than before.</p>
 
@@ -73,12 +115,14 @@
         </div>
 
         <div class="group">
-          <!--Third project-->
+          <!--Firth project-->
           <div class="item-left" id="center-container">
-            <img src="images/habitable-zone.jpeg" alt="Habitable Zone" width="300">
+            <img src="images/habitable-zone.jpeg" alt="Habitable Zone" width="300" height="350">
           </div>
           <div class="item-right">
             <h2><a href="https://github.com/JakobLS/Exoplanets-DeepLearning" style="color:#98BBA5" target="_blank">Finding Habitable Exoplanets with Deep Learning</a></h2>
+
+            <p><i>2018</i></p>
 
             <p>I developed a complete pre-processing pipeline and model architecture in order to apply deep learning to analyze light emitted from distant stars. The data was transformed into spectra and fed into convolutional neural networks to predict three target variables: temperature, gravity and metallicity.</p>
 
@@ -87,12 +131,14 @@
         </div>
 
         <div class="group">
-          <!--Fourth project-->
+          <!--Sixth project-->
           <div class="item-left" id="center-container">
-            <img src="images/stock-prices.jpg" alt="Stock Prices" width="300">
+            <img src="images/stock-prices.jpg" alt="Stock Prices" width="300" height="350">
           </div>
           <div class="item-right">
             <h2><a href="https://github.com/JakobLS/Stock-price-prediction" style="color:#98BBA5" target="_blank">Predicting Stock Prices</a></h2>
+
+            <p><i>2018</i></p>
             
             <p>My motives for this project were more selfish; I hoped that an automated stock-trading system for the Stockholm Stock Exchange might help me pay off student loans.</p> 
 
@@ -135,7 +181,7 @@
       <div>
         <div id="content-desktop">
           <!--Display Copyright on wider screens, e.g. Desktops-->
-          <p>©2020 Jakob Salomonsson</p>
+          <p>©2021 Jakob Salomonsson</p>
         </div>
         <div id="content-mobile">
           <!--Display nothing on smaller screens, e.g. Mobiles-->
