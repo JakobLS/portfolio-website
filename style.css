@@ -53,15 +53,15 @@ header {
 
 a:nth-child(1)[class="link-icon"]:after {
   content: "";
-  background-image: url("https://developer.mozilla.org/static/general/external-link.fb3c293b9226.svg");
+  background-image: url("images/External_link.png");
   background-size: 100% 100%;
   display: inline-block;
   filter: invert(77%) sepia(0%) saturate(191%) hue-rotate(149deg) brightness(95%) contrast(71%);
-  height: 12px;
-  width: 12px;
+  height: 9px;
+  width: 9px;
   position:relative;
-  padding-left: 1%;
-  margin-bottom: -1.5px;
+  padding-left: 0%;
+  margin: 0 0 0px 1.5px;
 }
 
 .first-section {
