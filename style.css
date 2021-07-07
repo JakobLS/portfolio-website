@@ -47,9 +47,14 @@ header {
   margin-right: auto;
 }
 
-.me-image {
-  /*Add filter to the image*/
+.me-image img{
+  /*Add filter to the profile image and set width*/
   filter: sepia(40%);
+  width: 40%;
+}
+
+img {
+  width: 300px;
 }
 
 
