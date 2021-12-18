@@ -238,7 +238,7 @@ a:active  {color: #A9A9A9;}
 }
 
   .item-left-logo img {
-    border-radius: 50px;
+    border-radius: 50%;
     width: 250px;
     height: 250px;
   }
