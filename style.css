@@ -93,7 +93,7 @@ p {
   color:#A9A9A9;
   font-size:90%;
   font-family: 'Montserrat', verdana, sans-serif;
-  font-weight: 500;
+  /* font-weight: 500; */
 }
 
 hr {
@@ -233,9 +233,9 @@ a:active  {color: #A9A9A9;}
     height: 300px;
   }
 
-.item-left-logo {
-  justify-content: center;
-}
+  .item-left-logo {
+    justify-content: center;
+  }
 
   .item-left-logo img {
     border-radius: 50%;
@@ -248,6 +248,17 @@ a:active  {color: #A9A9A9;}
     display: flex;
     align-items: center;
   }
+
+  .window-height p {
+    font-size: 100%;
+  }
+
+  .first-section {
+    width: 600px;
+    line-height: 22px;
+    /* font-weight: 900; */
+  }
+
 }
 
 
