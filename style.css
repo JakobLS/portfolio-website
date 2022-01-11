@@ -202,9 +202,13 @@ a:active  {color: #A9A9A9;}
 
  /* Specifications for when window width is larger than 800px */
 @media all and (min-width: 800px) {
+
   .group {
     flex-direction: row;
     padding: 0;
+    /* border: 2px solid #A9A9A9;
+    border-radius: 5%; */
+
   }
 
   .item-right {
@@ -249,14 +253,10 @@ a:active  {color: #A9A9A9;}
     align-items: center;
   }
 
-  .window-height p {
+  .introduction p {
     font-size: 100%;
-  }
-
-  .first-section {
-    width: 600px;
     line-height: 22px;
-    /* font-weight: 900; */
+    width: 600px;
   }
 
 }
