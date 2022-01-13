@@ -187,6 +187,10 @@ hr {
   height: 200px;
 }
 
+.tyre-image img {
+  max-width: 480px;
+}
+
 .footer {
   padding: 1% 0 2% 5%;
   font-size: 80%;
@@ -298,6 +302,16 @@ a:active  {color: #A9A9A9;}
     margin: 20vh 0 20vh 0;
   }
 
+}
+
+
+
+
+/* Specifications for when window height is lower than 500px */
+@media all and (max-height: 500px) {
+  header {
+    height: 120vh;
+  }
 }
 
 
