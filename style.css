@@ -5,13 +5,13 @@
 header {
   height: 100vh;
   width: 100vw;
-  /*background: url("images/desert-road-bending-left.jpg");
+  /* background: url("images/desert-road-bending-left.jpg"); */
   background-size: cover;
   background-repeat: no-repeat;
   background-color: transparent;
   background-position: center;
   border-radius: 0 0 10px 10px;
-  filter: sepia(30%)*/
+  /* filter: sepia(30%) */
 }
 
 .welcome-box h3 {
@@ -20,7 +20,7 @@ header {
   font-family: 'Montserrat', verdana, sans-serif;
   text-align: center;
   letter-spacing: 0.5px;
-  padding-top: 35vh;
+  padding-top: 25vh;
   margin: 0;
 }
 
@@ -53,6 +53,20 @@ header {
 
 img {
   width: 300px;
+}
+
+
+.image-padding-top {
+  padding-top: 10vh;
+}
+
+.connect-logos {
+  width: 30px;
+  height: 30px;
+}
+
+.rounded-logo {
+  border-radius: 10%;
 }
 
 
@@ -115,9 +129,8 @@ hr {
   text-align: center;
 }
 
-.margin {
-  margin-top: 20%;
-  margin-bottom: 0%;
+.top-padding {
+  padding-top: 15vh;
 }
 
 .group {
@@ -186,7 +199,12 @@ a:hover   {color: #98BBA5;}
 a:active  {color: #A9A9A9;}
 
 
+
 .window-height {
+  height: 100vh;
+}
+
+.connect-height {
   height: 100vh;
 }
 
@@ -257,6 +275,10 @@ a:active  {color: #A9A9A9;}
     font-size: 100%;
     line-height: 22px;
     width: 600px;
+  }
+
+  .connect-height {
+    height: 90vh;
   }
 
 }
