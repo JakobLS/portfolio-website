@@ -98,6 +98,15 @@ a:nth-child(1)[class="link-icon"]:after {
   vertical-align:middle;
 }
 
+.introduction-outer {
+  background-color: #000;
+  border-radius: 10px;
+}
+
+.introduction p {
+  color: #fff;
+}
+
 .collaboration {
   padding-top: 1%;
   padding-bottom: 4%;
@@ -127,6 +136,10 @@ hr {
   font-size: 150%;
   font-family: 'Montserrat', verdana, sans-serif;
   text-align: center;
+}
+
+.projects-heading-margin {
+  margin: 15vh 0 10vh 0;
 }
 
 .top-padding {
@@ -279,6 +292,10 @@ a:active  {color: #A9A9A9;}
 
   .connect-height {
     height: 90vh;
+  }
+
+  .projects-heading-margin {
+    margin: 20vh 0 20vh 0;
   }
 
 }
