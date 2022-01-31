@@ -14473,14 +14473,14 @@ only showing top 5 rows
 </div>
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>We can verify that we have around 100 million ratings in the range [1-5] and that each column has the expected data type. We can also note the following:</p>
+<p>We can verify that we have around 100 million ratings in the range [1-5] and that each column has the expected data type. The following can also be noted:</p>
 <ul>
 <li>There are 17770 unique movies</li>
 <li>Over 2.6 million unique customers</li>
 <li>The oldest movie was released in 1896, while the most recent in 2005</li>
 <li>There are some missing values in the <code>YearOfRelease</code> column</li>
 </ul>
-<p>While we will do a more thorough visulisation of the dataset efter engineering more features, we can already now remove the missing values.</p>
+<p>While we will do a more thorough visulisation of the dataset efter engineering more features, we can already now remove missing values.</p>
 
 </div>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
@@ -14563,10 +14563,10 @@ only showing top 5 rows
 </div>
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>We've confirmed that there are no <code>NULL</code> values left.</p>
+<p>It's confirmed - there are no <code>NULL</code> values left.</p>
 <p><br></p>
 <p><a name="FE"></a></p>
-<h2 id="Feature-Engineering"><a href="#top">Feature Engineering</a><a class="anchor-link" href="#Feature-Engineering">&#182;</a></h2><p>We will do som simple feature engineering by extracting the year and month from the <code>RatingDate</code> column as well as calculating the difference in years between that column and the <code>YearOfRelease</code> column. Perhaps knowing when the rating was given and its relation to the release date might better help us determine what rating was given by a specific user. We should also make sure to convert the columns to adequate data types using the <code>.cast()</code> method.</p>
+<h2 id="Feature-Engineering"><a href="#top">Feature Engineering</a><a class="anchor-link" href="#Feature-Engineering">&#182;</a></h2><p>We will do some simple feature engineering by extracting year and month from the <code>RatingDate</code> column as well as calculating the difference in years between that column and the <code>YearOfRelease</code> column. Perhaps knowing when the rating was given and its relation to the release date might better help us determine what rating was given by a specific user. We should also make sure to convert the columns to adequate data types using the <code>.cast()</code> method.</p>
 <p>Engineering the difference, <code>Diff_RatingRelease</code>, is the trickiest and needs some extra work.</p>
 
 </div>
@@ -14627,7 +14627,7 @@ only showing top 5 rows
 </div>
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>Furthermore, we can also bin the <code>Diff_ReleaseRating</code> column into <code>Diff_binned</code> to have fewer categories to deal with. I'm creating these bins rather arbitrary for now. Ideally however, we would bin in several different ways before training and evaluating these models to find the most suited bin for the problem. I will take a shortcut and bin it in the following way though:</p>
+<p>Furthermore, we can also bin the <code>Diff_ReleaseRating</code> column into <code>Diff_binned</code> to have fewer categories to deal with. I'm creating these bins rather arbitrary for now. Ideally however, we would bin in several different ways before training and evaluating these models to find the most suited bins for the problem. I will take a shortcut and bin in the following way though:</p>
 <table>
 <thead><tr>
 <th>Values</th>
@@ -14740,7 +14740,7 @@ only showing top 5 rows
 </div>
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>Moreover, we have some categorical variables that should be treated before being fed into an estimator. These are the nominal variables <code>MovieID</code> and <code>CustomerID</code>. Under current rank order representation, the <code>CustomerID</code> column will teach the estimator that, for example, the customer with <code>CustomerID</code> <em>1488844</em> is larger/bigger/worth more than the customer with <code>CustomerID</code> <em>822109</em>. Such bias is misleading and we need to address that. There are several options we can take here, such as one-hot encoding and bin-counting, but we will go with hashing as it's more straight forward and offers computational advantages. Spark's <code>FeatureHasher</code> is well suited for this.</p>
+<p>Moreover, we have some categorical variables that should be treated before moving forward. These are the nominal variables <code>MovieID</code> and <code>CustomerID</code>. Under current rank order representation, the <code>CustomerID</code> column will teach the estimator that, for example, the customer with <code>CustomerID</code> <em>1488844</em> is larger/bigger/worth more than the customer with <code>CustomerID</code> <em>822109</em>. Such bias is misleading and we need to address that. There are several options we can take here, such as one-hot encoding and bin-counting, but we will go with hashing as it's more straight forward and offers computational advantages. Spark's <code>FeatureHasher</code> is well suited for this.</p>
 <p>We leave the ordinal variables <code>YearOfRelease</code>, <code>RatingYear</code> and <code>RatingsMonth</code> as is since they are sensitive to rank order.</p>
 
 </div>
@@ -14801,9 +14801,9 @@ only showing top 5 rows
 </div>
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>Let's keep the target variable <code>Rating</code> as a float. This allows us to approach it as a regression rather than as a classification problem, with the advantage of providing us with the size of the error on each prediction.</p>
+<p>Let's keep the target variable <code>Rating</code> as a float. This allow us to approach it as a regression rather than as a classification problem, with the advantage of providing us with the size of the error on each prediction. Besides, that was the approach in the competition.</p>
 <p><a name="data_vis"></a></p>
-<h2 id="Data-Visualisation"><a href="#top">Data Visualisation</a><a class="anchor-link" href="#Data-Visualisation">&#182;</a></h2><p>Plot the count for each one of the columns to get a fair estimate of their distribution. The <code>MovieID</code> and <code>CustomerID</code> columns are truncated due to their large size and only display the lowest five (which each has <em>count=1</em>) and highest 100 counts. We also sort these columns on their counts to facilitate interpretation. We won't display the hashed columns as they are hard to interpret for the human eye.</p>
+<h2 id="Data-Visualisation"><a href="#top">Data Visualisation</a><a class="anchor-link" href="#Data-Visualisation">&#182;</a></h2><p>Plot the count for each of the columns to get a fair estimate of their distribution. The <code>MovieID</code> and <code>CustomerID</code> columns are truncated due to their large size and only display the lowest five (which each has <code>count=1</code>) and highest 100 counts. We also sort these columns on their counts to facilitate interpretation. No need to display the hashed columns as they are hard to interpret for the human eye anyway.</p>
 
 </div>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
@@ -14909,7 +14909,7 @@ only showing top 5 rows
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <p><a name="ml-modelling"></a></p>
-<h2 id="Machine-Learning-modelling"><a href="#top">Machine Learning modelling</a><a class="anchor-link" href="#Machine-Learning-modelling">&#182;</a></h2><p>With a smaller dataset we would prefer to train and test many models using cross-validation. However, with over 100 million ratings, we can consider the data to be fairly large and will thus go with a more traditional train / test split. 80% of the data will be dedicated for training the model while 20% for testing it. Providing a <code>seed</code> will allow us (and you) to replicate the results.</p>
+<h2 id="Machine-Learning-modelling"><a href="#top">Machine Learning modelling</a><a class="anchor-link" href="#Machine-Learning-modelling">&#182;</a></h2><p>With a smaller dataset we would prefer to train and test many models using cross-validation. However, with over 100 million ratings, we can consider the data to be fairly large and will thus go with a more traditional train / test split. 80% of the data will be dedicated for training the model while 20% for testing it. Providing a <code>seed</code> will allow us to replicate the results.</p>
 
 </div>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
@@ -15038,7 +15038,7 @@ only showing top 5 rows
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <p><a name="baseline"></a></p>
-<h3 id="Get-baseline-results-with-Linear-Regression"><a href="#top">Get baseline results with Linear Regression</a><a class="anchor-link" href="#Get-baseline-results-with-Linear-Regression">&#182;</a></h3><p>To have something to compare with, we will train and evaluate one of the more simplistic algorithms on the data; Linear Regression. Using its default parameters.</p>
+<h3 id="Get-baseline-results-with-Linear-Regression"><a href="#top">Get baseline results with Linear Regression</a><a class="anchor-link" href="#Get-baseline-results-with-Linear-Regression">&#182;</a></h3><p>To have something to compare with, we will train and evaluate one of the more simplistic algorithms on the data; Linear Regression, using its default parameters.</p>
 <p>Note that we do this on a smaller fraction of the data to speed things up (file <code>part-00000*.parquet</code>, which is around 2.5 million reviews). You can load it by changing the <code>data_path</code> <a href="#data_path">above</a>.</p>
 <div class="highlight"><pre><span></span><span class="c1"># Specify data path</span>
 <span class="n">data_path</span> <span class="o">=</span> <span class="s2">&quot;data-parquet/part-00000*.parquet&quot;</span>
@@ -15193,8 +15193,9 @@ RMSE test set:  1.15247
 </div>
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>We have a baseline of 1.152 on the test set. There's practically no difference between the train and test sets which means variance is low.</p>
-<p>After evaluating a model using the original <code>CustomerID</code> and <code>MovieID</code> features instead of the hashed alternatives, <code>HashedCustomerID</code> and <code>HashedMovieID</code>, I found practically no differences between the two. I will thus go with the original features, and you will simply have to take my words for it. =)</p>
+<p>A baseline of 1.152 is achieved on the test set. There's practically no difference between the train and test sets, which means variance is low.</p>
+<blockquote><p>After evaluating a model using the original <code>CustomerID</code> and <code>MovieID</code> features instead of the hashed alternatives, <code>HashedCustomerID</code> and <code>HashedMovieID</code>, I found practically no differences between the two. I will thus go with the original features, and you will simply have to take my words for it. :)</p>
+</blockquote>
 <p><a name="regressors"></a></p>
 <h3 id="Tune-and-Evaluate-Multiple-Regressors"><a href="#top">Tune and Evaluate Multiple Regressors</a><a class="anchor-link" href="#Tune-and-Evaluate-Multiple-Regressors">&#182;</a></h3><p>In order to find the best model for the problem, we will evaluate several standard algorithms. Train, tune and evaluate Decision Trees, Random Forest, Gradient-Boosted Trees and Linear Regressors on the dataset.</p>
 
@@ -15443,7 +15444,7 @@ subSamplingsRate: 0.7
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <p><a name="best_model"></a></p>
-<h2 id="Train-the-Best-GBTRegressor-on-the-Full-Dataset"><a href="#top">Train the Best GBTRegressor on the Full Dataset</a><a class="anchor-link" href="#Train-the-Best-GBTRegressor-on-the-Full-Dataset">&#182;</a></h2><p>We train the GBTRegressor on the entire dataset using the best parameters. Load the entire dataset by updating <a href="#data_path">above</a> code to the following:</p>
+<h2 id="Train-the-Best-GBTRegressor-on-the-Full-Dataset"><a href="#top">Train the Best GBTRegressor on the Full Dataset</a><a class="anchor-link" href="#Train-the-Best-GBTRegressor-on-the-Full-Dataset">&#182;</a></h2><p>Train the GBTRegressor on the entire dataset using the best parameters. Load the entire dataset by updating <a href="#data_path">above</a> code to the following:</p>
 <div class="highlight"><pre><span></span><span class="c1"># Specify data path</span>
 <span class="n">data_path</span> <span class="o">=</span> <span class="s2">&quot;data-parquet/part-0*.parquet&quot;</span>
 </pre></div>
@@ -15557,12 +15558,12 @@ RMSE test set:  1.14893
 </div>
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>We have a final score of 1.149 on the test set. The model is not overfitting as the variance is practically zero. It's just barely better than the 1.152 baseline though, and significantly worse than the 0.8572 the team who won the challenge in 2009 got.</p>
+<p>We have a final score of 1.149 on the test set. It's barely better than the 1.152 baseline though, and significantly worse than the 0.8572 the team who won the challenge in 2009 got.</p>
 <p>Let's further explore which of the features are most important for the model to make its predicitons.</p>
 <p><a name="feature_importance"></a></p>
 <h2 id="Which-Features-are-most-Important?"><a href="#top">Which Features are most Important?</a><a class="anchor-link" href="#Which-Features-are-most-Important?">&#182;</a></h2><p>The most important features are <code>YearOfRelease</code>, <code>MovieID</code> and <code>RatingMonth</code>, contributing 37, 27 and 20%, respectively, as displayed in the plot below. The difference between the release and rating year, <code>Diff_binned</code> contributes a meek 3% to the overall, while <code>CustomerID</code> less than 1 percent.</p>
 <p>This means that it matters little <em>who</em> rated the movie and far more <em>which</em> movie it is. This is reasonable as one would expect that most people would rate a good movie as good and a bad one as bad.</p>
-<p>However, that the release year matters this much is quite surprising. We would need to dig deeper into the data to find out why this may be the case. We won't do that here, but can speculate that, perhaps, older movies are held to newer standards and since all ratings are from 1999 and later, while some movies are 100 years older than that, their ratings might be affected by this. Who hasn't re-watched a favourite movie from childhood and found it awful at later years? Or perhaps, newer movies might simply be better than older.</p>
+<p>However, that the release year matters this much is quite surprising. We would need to dig deeper into the data to find out why this may be the case. We won't do that here, but can speculate that, perhaps, older movies are held to newer standards, and since all ratings are from 1999 and later, while some movies are 100 years older than that, their ratings might be biased by this. Who hasn't re-watched a favourite movie from childhood and found it awful at later years? Or perhaps, newer movies might simply be better than older?</p>
 
 </div>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
@@ -15623,8 +15624,8 @@ RMSE test set:  1.14893
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <p><br></p>
 <p><a name="conclusions"></a></p>
-<h2 id="Conclusions"><a href="#top">Conclusions</a><a class="anchor-link" href="#Conclusions">&#182;</a></h2><p>We've trained a couple of models on the 100 million ratings dataset from the Netflix challenge back in 2009 using nothing but a laptop. Although the model performance isn't as good as what was reported by the teams (after all, I can't spend the 2,000 hours they <a href="https://netflixtechblog.com/netflix-recommendations-beyond-the-5-stars-part-1-55838468f429">reportedly</a> spent during the first year of the competition only), we have been sucessfull in training a fairly large dataset locally.</p>
-<p>We achieved a final score of 1.149 RMSE and identified release year, movie ID and rating month to be the most important features when predicting a movie's rating.</p>
+<h2 id="Conclusions"><a href="#top">Conclusions</a><a class="anchor-link" href="#Conclusions">&#182;</a></h2><p>I've trained a few models on the 100 million ratings dataset obtained from the Netflix challenge back in 2009 using nothing but a laptop. Although the model performance isn't as good as what was reported by the winning teams (after all, I can't spend the 2,000 hours they <a href="https://netflixtechblog.com/netflix-recommendations-beyond-the-5-stars-part-1-55838468f429">reportedly</a> spent during the first year of the competition), I'vee been successful in training a fairly large dataset locally.</p>
+<p>A final score of 1.149 RMSE was achieved while identifying release year, movie ID and rating month to be the most important features when predicting a movie's rating.</p>
 
 </div>
 </div>
