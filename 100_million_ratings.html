@@ -3,7 +3,7 @@
 <head><meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>100 Million Ratings with Spark on a Mac M1 - Analytics</title><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
+<title>100 Million Ratings with Spark on a Mac M1</title><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
 
 
 
@@ -13988,8 +13988,8 @@ a.anchor-link {
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <h1 id="100-Million-Ratings-with-Spark-on-a-Mac-M1">100 Million Ratings with Spark on a Mac M1<a class="anchor-link" href="#100-Million-Ratings-with-Spark-on-a-Mac-M1">&#182;</a></h1><p><br></p>
 <p>Is it feasable to train a model on 100 million rows using nothing more than a common laptop? Let's find out.</p>
-<p>I've been learning Spark lately and wanted to give it a try on a dataset I wouldn't be able to deal with using non-big data tools such as Pandas and Numpy. I came across the dataset and the Netflix challenge it originates from some time ago, but have never really had any reason to work on it. Until now. I should also confess that I've been inspired by <a href="https://www.linkedin.com/in/jaredpollack713/">Jared Pollack</a> from our discussion about it some time ago.</p>
-<p>In case you haven't yet, the dataset can be downloaded through <a href="https://www.kaggle.com/netflix-inc/netflix-prize-data">this</a> link.</p>
+<p>I've been refreshing Spark lately and wanted to give it a try on a dataset I wouldn't be able to deal with using non-big data tools such as Pandas and Numpy. I came across the dataset and the Netflix challenge it originates from some time ago, but have never really had any reason to work on it. Until now. I should also confess that I've been inspired by <a href="https://www.linkedin.com/in/jaredpollack713/">Jared Pollack</a> from our discussion about it some time ago.</p>
+<p>The dataset can be downloaded through <a href="https://www.kaggle.com/netflix-inc/netflix-prize-data">this</a> link.</p>
 <p><br><br></p>
 <p><a name="top"></a></p>
 <p><br></p>
@@ -15624,7 +15624,7 @@ RMSE test set:  1.14893
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <p><br></p>
 <p><a name="conclusions"></a></p>
-<h2 id="Conclusions"><a href="#top">Conclusions</a><a class="anchor-link" href="#Conclusions">&#182;</a></h2><p>I've trained a few models on the 100 million ratings dataset obtained from the Netflix challenge back in 2009 using nothing but a laptop. Although the model performance isn't as good as what was reported by the winning teams (after all, I can't spend the 2,000 hours they <a href="https://netflixtechblog.com/netflix-recommendations-beyond-the-5-stars-part-1-55838468f429">reportedly</a> spent during the first year of the competition), I'vee been successful in training a fairly large dataset locally.</p>
+<h2 id="Conclusions"><a href="#top">Conclusions</a><a class="anchor-link" href="#Conclusions">&#182;</a></h2><p>I've trained a few models on the 100 million ratings dataset obtained from the Netflix challenge back in 2009 using nothing but a laptop. Although the model performance isn't as good as what was reported by the winning teams (after all, I can't spend the 2,000 hours they <a href="https://netflixtechblog.com/netflix-recommendations-beyond-the-5-stars-part-1-55838468f429">reportedly</a> spent during the first year of the competition), I've been successful in training a fairly large dataset locally.</p>
 <p>A final score of 1.149 RMSE was achieved while identifying release year, movie ID and rating month to be the most important features when predicting a movie's rating.</p>
 
 </div>
