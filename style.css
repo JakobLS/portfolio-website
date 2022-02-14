@@ -101,7 +101,6 @@ a:nth-child(1)[class="link-icon"]:after {
 
 .introduction-outer {
   background-color: #000;
-  border-radius: 10px;
 }
 
 .introduction p {
@@ -231,6 +230,17 @@ a:active  {color: #A9A9A9;}
   display: flex;
   align-items:center;
 }
+
+
+
+
+
+
+
+
+
+
+
 
 
 
