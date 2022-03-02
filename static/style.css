@@ -246,7 +246,7 @@ a:active  {color: #A9A9A9;}
 }
 
 .project-header-inner a {
-  font-size: 120%;
+  font-size: 100%;
   font-family: 'Montserrat', verdana, sans-serif;
 }
 
@@ -445,7 +445,7 @@ a:active  {color: #A9A9A9;}
 
   /* A billion taxi cabs CSS */
   .project-header-inner a {
-    font-size: 140%;
+    font-size: 120%;
   }
 
   .taxis-inner {
