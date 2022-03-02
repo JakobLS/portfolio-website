@@ -8,7 +8,7 @@
 
     <title>Jakob Salomonsson</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" rel="stylesheet" type="text/css"/>
-    <link href="style.css" rel="stylesheet" type="text/css" />
+    <link href="static/style.css" rel="stylesheet" type="text/css" />
     <link rel="shortcut icon" type="image/png" href="images/favicon-96x96.png">
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
@@ -23,13 +23,14 @@
   </head>
 
   <body>
-    <header>
+ 
+    <header class="main-header">
       <div class="welcome-box">
         <h3>Welcome, I'm</h3>
         <h1>Jakob Salomonsson</h1>
       </div>
       <div class="me-image-box me-image image-padding-top">
-        <img src="images/me-sitting.png">
+        <img class="img-width" src="images/me-sitting.png">
       </div>
     </header>
 
@@ -43,7 +44,7 @@
 
               <p>The purpose of this website is mainly to offer a showcase for some of the projects I've worked on so far. Feel free to take a scroll!</p>
               
-              <p>And oh yeah, I normally tune in to the following <a href="https://open.spotify.com/playlist/2Wx6OO6dAibJOzo7dMYgDB?si=586416ae379b4212" target="_blank" rel="noopener">playlist</a> while working.</p>
+              <p>And oh yeah, I normally tune in to <a href="https://open.spotify.com/playlist/2Wx6OO6dAibJOzo7dMYgDB?si=586416ae379b4212" target="_blank" rel="noopener">this playlist</a> while working.</p>
 
             </div>
           </div>
@@ -56,19 +57,36 @@
         <div>
           <!--Heading-->
           <div class="projects-listing-heading projects-heading-margin">
-            <h2>Some projects I've worked on</h2>
+            <h2>Some of my work</h2>
             <hr>
           </div>
         </div>
 
         <div class="group">
           <div class="item-left" id="center-container">
-            <a href="spotify-streams.html">
-              <img src="images/spotify-streams.png" alt="Spotify Song Popularity">
+            <a href="projects/billion_taxi_trips.html">
+              <img class="img-width" src="images/cars_wide.jpeg" alt="Predicting the Fare on a Billion Taxi Trips with BigQuery">
             </a>
           </div>
           <div class="item-right">
-            <h2><a href="spotify-streams.html" style="color:#98BBA5">Spotify Streams in Europe & North America 2017-2021</a></h2>
+            <h2><a href="projects/billion_taxi_trips.html" style="color:#98BBA5">Predicting the Fare on a Billion Taxi Trips with BigQuery</a></h2>
+
+            <p><i>2022</i></p>
+
+            <p>How long time does it take and how much does it cost to analyse and train a model on a billion taxi trips in the cloud? When do most trips occur, what affects the total fare amount the most and how accurately can we predict it?</p>
+ 
+          </div>
+        </div>
+
+
+        <div class="group">
+          <div class="item-left" id="center-container">
+            <a href="projects/spotify-streams.html">
+              <img class="img-width" src="images/spotify-streams.png" alt="Spotify Song Popularity">
+            </a>
+          </div>
+          <div class="item-right">
+            <h2><a href="projects/spotify-streams.html" style="color:#98BBA5">Spotify Streams in Europe & North America 2017-2021</a></h2>
 
             <p><i>2022</i></p>
 
@@ -84,7 +102,7 @@
         <div class="group">
           <div class="item-left item-left-logo" id="center-container">
             <a href="projects/spotify-song-popularity-a.html">
-              <img src="images/spotify-logo-black.jpeg" alt="Spotify Song Popularity">
+              <img class="img-width" src="images/spotify-logo-black.jpeg" alt="Spotify Song Popularity">
             </a>
           </div>
           <div class="item-right">
@@ -103,7 +121,7 @@
         <div class="group">
           <div class="item-left image-width" id="center-container">
             <a href="projects/100_million_ratings.html">
-              <img src="images/outdoor-exercise.jpeg" alt="100 Million Ratings with Spark on a Mac M1">
+              <img class="img-width" src="images/outdoor-exercise.jpeg" alt="100 Million Ratings with Spark on a Mac M1">
             </a>
           </div>
           <div class="item-right">
@@ -123,7 +141,7 @@
         <div class="group">
           <div class="item-left item-left-logo" id="center-container">
             <a href="https://evaluateml.com/" target="_blank" rel="noopener">
-              <img src="images/EvaluateML-black.png" alt="EvaluateML - Evaluating students smarter">
+              <img class="img-width" src="images/EvaluateML-black.png" alt="EvaluateML - Evaluating students smarter">
             </a>
           </div>
           <div class="item-right">
@@ -143,7 +161,7 @@
         <div class="group">
           <div class="item-left image-width" id="center-container">
             <a href="projects/Tyre_maintenence.html">
-              <img src="images/tyre-maintenence.jpg" alt="Tyre Thread Depth Prediction">
+              <img class="img-width" src="images/tyre-maintenence.jpg" alt="Tyre Thread Depth Prediction">
             </a>
           </div>
           <div class="item-right">
@@ -163,7 +181,7 @@
         <div class="group">
           <div class="item-left" id="center-container">
             <a href="projects/Skin_cancer_detection.html">
-              <img src="images/cancer-collage.jpg" alt="Skin Cancer detection">
+              <img class="img-width" src="images/cancer-collage.jpg" alt="Skin Cancer detection">
             </a>
           </div>
           <div class="item-right">
@@ -183,7 +201,7 @@
         <div class="group">
           <div class="item-left" id="center-container">
             <a href="CancerSEEK_Presentation.pdf">
-              <img src="images/cancerseek1-resized.jpg" alt="CancerSEEK">
+              <img class="img-width" src="images/cancerseek1-resized.jpg" alt="CancerSEEK">
             </a>
           </div>
           <div class="item-right">
@@ -204,7 +222,7 @@
         <div class="group">
           <div class="item-left" id="center-container">
             <a href="projects/CancerSEEK-New-Sequencing-Aneuploidy.html">
-              <img src="images/cancerseek2-resized.jpg" alt="CancerSEEK Follow-up">
+              <img class="img-width" src="images/cancerseek2-resized.jpg" alt="CancerSEEK Follow-up">
             </a>
           </div>
           <div class="item-right">
@@ -221,7 +239,7 @@
         <div class="group">
           <div class="item-left" id="center-container">
             <a href="Master-Thesis--Estimating-Physical-Stellar-Parameters-from-High-Resolution-Spectra-with-a-Deep-Learning-Regression-Approach.pdf">
-              <img src="images/habitable-zone.jpeg" alt="Habitable Zone">
+              <img class="img-width" src="images/habitable-zone.jpeg" alt="Habitable Zone">
             </a>
           </div>
           <div class="item-right">
@@ -238,7 +256,7 @@
         <div class="group">
           <div class="item-left" id="center-container">
             <a href="Stock-price-prediction.pdf">
-              <img src="images/stock-prices.jpg" alt="Stock Prices">
+              <img class="img-width" src="images/stock-prices.jpg" alt="Stock Prices">
             </a>
           </div>
           <div class="item-right">
@@ -293,7 +311,7 @@
         </div>
       </div>
     </footer>
-    <script src="script.js"></script>
+    <script src="static/script.js"></script>
   </body>
 </html>
 

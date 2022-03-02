@@ -2,7 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@400;700&family=Montserrat:wght@300;700&family=Nanum+Pen+Script&display=swap');
 
 
-header {
+.main-header {
   height: 100vh;
   width: 100vw;
   /* background: url("images/desert-road-bending-left.jpg"); */
@@ -52,7 +52,7 @@ header {
   width: 40%;
 }
 
-img {
+.img-width {
   width: 300px;
 }
 
@@ -232,6 +232,134 @@ a:active  {color: #A9A9A9;}
 }
 
 
+/* A billion taxi cabs CSS */
+.project-header {
+  display: flex;
+  justify-content: flex-start;
+  height: 60px;
+  width: 100vw;
+}
+
+.project-header-inner {
+  width: 100%;
+  margin-left: 20px;
+}
+
+.project-header-inner a {
+  font-size: 120%;
+  font-family: 'Montserrat', verdana, sans-serif;
+}
+
+.taxis-outer {
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  height: auto;
+  width: 100vw;
+}
+
+.taxis-inner {
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  background-color: white;
+  width: 90vw;
+  height: auto;
+  margin-top: 0%;
+}
+
+.project_h1 {
+  font-weight: 600;
+  font-size: 170%;
+  font-family: 'Montserrat', verdana, sans-serif;
+}
+
+.taxis-inner p, li {
+  line-height: 150%;
+  font-size: 120%;
+  color: black;
+  font-family:   serif;
+}
+
+.taxis-inner h2 {
+  font-size: 140%;
+  font-weight: 600;
+  font-family: 'Montserrat', verdana, sans-serif;
+}
+
+.taxis-inner h3 {
+  font-size: 100%;
+  font-weight: 600;
+  font-family: 'Montserrat', verdana, sans-serif;
+}
+
+.full-image {
+  width: 100%;
+}
+
+.images-div {
+  margin: 0 auto;
+  text-align: center;
+  width: 80%
+}
+
+.figure-caption {
+  text-align: center;
+  font-size: 80%;
+  font-family: 'Montserrat', verdana, sans-serif;
+  margin-top: 10px;
+}
+
+.figure-specs {
+  margin: 20px 0px 20px 0px;
+}
+
+.quote-div-outer {
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.quote-div-inner {
+  width: 80%;
+}
+
+.quote-text p {
+  font-size: 140%;
+  font-family: 'Montserrat', verdana, sans-serif;
+}
+
+.top-margin-h2 {
+  margin-top: 12%;
+}
+
+.top-margin-h3 {
+  margin-top: 8%;
+  margin-bottom: 0%;
+}
+
+.inline-code {
+  background-color: #F1F3F5;
+  padding: 0px 3px;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 400;
+  font-size: 80%;
+  border-radius: 2px;
+}
+
+.li-space li {
+  padding: 6px 0;
+}
+
+.bottom-space {
+  margin-bottom: 30%;
+}
+
+
+
+
+
 
 
 
@@ -252,8 +380,6 @@ a:active  {color: #A9A9A9;}
   .group {
     flex-direction: row;
     padding: 0;
-    /* border: 2px solid #A9A9A9;
-    border-radius: 5%; */
   }
 
   .welcome-box h3 {
@@ -315,6 +441,37 @@ a:active  {color: #A9A9A9;}
   .projects-heading-margin {
     margin: 20vh 0 20vh 0;
   }
+
+
+  /* A billion taxi cabs CSS */
+  .project-header-inner a {
+    font-size: 140%;
+  }
+
+  .taxis-inner {
+    width: 700px;
+    margin-top: 2%;
+  }
+
+  .project_h1 {
+    font-weight: 600;
+    font-size: 200%;
+    font-family: 'Montserrat', verdana, sans-serif;
+  }
+
+  .taxis-inner p, li {
+    line-height: 200%;
+    font-size: 130%;
+  }
+
+  .taxis-inner h2 {
+    font-size: 170%;
+  }
+  
+  .taxis-inner h3 {
+    font-size: 120%;
+  }
+
 
 }
 

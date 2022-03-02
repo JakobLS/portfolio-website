@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:description" content="Predicting the Fare on a Billion Taxi Trips in BigQuery">
+    <meta property="og:image" content="https://github.com/JakobLS/public-photos/blob/main/cars_wide.jpeg?raw=true">
+  
+
+    <title>Predicting the Fare on a Billion Taxi Trips in BigQuery</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" rel="stylesheet" type="text/css"/>
+    <link href="../static/style.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" type="image/png" href="../images/favicon-96x96.png">
+
+    <!-- Google fonts for code syntax highlightning -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200;300&display=swap" rel="stylesheet">
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-QZ3TK8J9QP"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-QZ3TK8J9QP');
+    </script>
+  </head>
+
+  <body>
+    <header class="project-header">
+        <div class="project-header-inner">
+            <p><a href="../index.html">Home</a></p>
+        </div>
+    </header>
+
+    <main>
+        <div class="taxis-outer">
+            <div class="taxis-inner">
+                <h1 class="project_h1">Predicting the Fare on a Billion Taxi Trips with BigQuery</h1>
+
+                <p>How long time does it take and how much does it cost to analyse and train a model on a billion taxi trips in the cloud? When do most trips occur, what affects the total fare amount the most and how accurately can we predict it?</p>
+
+                <p>Google's BigQuery makes it straight forward to analyse the data before applying machine learning to it. We will use the publicly available <a href="https://console.cloud.google.com/marketplace/browse?q=nyc%20tlc%20trips&filter=solution-type:dataset" target="_blank" rel="noopener">cab rides dataset</a> for New York City, which includes over 1.1 billion rides between 2009 and 2015. Due to the size of the dataset, we will initially work on a small fraction of it to facilitate visualisation and save on query costs. Once developed a good understanding of the data we'll train a model on all 1 billion samples. Lastly, we will use the model to make predictions before analysing the errors.</p>
+
+                <p>I will mainly work in a <a href="https://cloud.google.com/vertex-ai-workbench" target="_blank" rel="noopener">Jupyter notebook environment hosted on Google Cloud Platform</a> to facilitate the documentation of each step. The complete notebook with more details can be <a href="https://github.com/JakobLS/billion_taxi_trips">accessed on GitHub</a>.</p>
+
+                <figure class="full-image figure-specs">
+                    <a href="nyc-taxi-cabs/cars_wide.jpeg"><img class="full-image" src="nyc-taxi-cabs/cars_wide.jpeg" alt="A billion taxi trips"></a>
+                    <figcaption class="figure-caption">A billion taxi trips</figcaption>
+                </figure>
+
+                <h2 class="top-margin-h2">Exploratory Data Analysis</h2>
+
+                <p>Start by querying 1 in 10,000 rows of the data using BigQuery, keeping a subset of the columns only. Since the dataset consist of a little more than 1 billion records, we will end up with just north of 100,000 rows. This size will be small enough to facilitate data visualisation while large enough to represent the entire dataset pretty well. This is how the query looks like:</p>
+
+                <figure class="full-image figure-specs">
+                    <script src="https://gist.github.com/JakobLS/e6d3ebcc6d8fae770c1d7b6039aa60bb.js"></script>
+                    <figcaption class="figure-caption">Randomised controlled query of 100k samples</figcaption>
+                </figure>
+
+                <p>We can now calculate some descriptive statistics to get a better understanding of the data.</p>
+
+                <figure class="full-image figure-specs">
+                    <a href="nyc-taxi-cabs/describe.png"><img class="full-image" src="nyc-taxi-cabs/describe.png" alt="Descriptive statistics"></a>
+                    <figcaption class="figure-caption">Descriptive statistics</figcaption>
+                </figure>   
+
+                <p>Among other things, we learn the following</p>
+
+                <ul>
+                    <li>The subset we're currently working with include 109,122 trips.</li>
+                    <li>There are questionable high and low values in <span class="inline-code">pickup_longitude</span>, <span class="inline-code">pickup_latitude</span>, <span class="inline-code">dropoff_longitude</span>, <span class="inline-code">dropoff_latitude</span>.</li>
+                    <li><span class="inline-code">rate_code</span> is missing in over 15,000 trips (92,225 are present).</li>
+                    <li>There are zero distance trips.</li>
+                    <li>There are negative values in <span class="inline-code">fare_amount</span> and <span class="inline-code">total_amount</span>.</li>
+                    <li>The average <span class="inline-code">total_amount</span> is $13.2</li>
+                </ul>
+
+                <p>Let's move forward by extracting hour, day, month and year from the <span class="inline-code">pickup_time</span> column as well as calculating trip duration to facilitate further analysis.</p>
+
+                <figure class="full-image figure-specs">
+                    <script src="https://gist.github.com/JakobLS/bde9db81a10375707920b9a1668212b8.js"></script>
+                    <figcaption class="figure-caption"></figcaption>
+                </figure>
+
+                <h3 class="top-margin-h3">Categorical Variables</h3>
+
+                <p>Now when we have an overall understanding of the data, we can dig a little deeper into each one of the columns.</p>
+
+                <p>Columns <span class="inline-code">passenger_count</span>, <span class="inline-code">pickup_hour</span>, <span class="inline-code">day_of_week</span>, <span class="inline-code">pickup_month</span> and <span class="inline-code">pickup_year</span> are all discrete ordinal variables (i.e., there is a natural ordering of the values where 14:00 comes before 15:00, and so forth). In terms of <span class="inline-code">rate_code</span> however, there is no such interrelationship between, for example, group 1 (standard fare) and 2 (JFK); it makes little sense to say that standard fare comes before an airport fare.</p>
+
+                <figure class="full-image figure-specs">
+                    <a href="nyc-taxi-cabs/categorical_variables.png"><img class="full-image" src="nyc-taxi-cabs/categorical_variables.png" alt="Categorical variables and their respective counts"></a>
+                    <figcaption class="figure-caption">Categorical variables and their respective counts</figcaption>
+                </figure>
+
+                <p>Some takeaways from above plot:</p>
+
+                <ul class="li-space">
+                    <li>Over 80% of the trips use standard rate (1). (2) and (3) refers to JFK and Newark, respectively. Although surprisingly low airport counts, we can keep them. Rate code (6), group ride, can be excluded since the same information is mapped in the <span class="inline-code">passenger_count</span> column. As identified before, there are over 15,000 rows missing in this column. Although there are several ways we can approach this, we will go with the easiest solution which is excluding rows with missing values. We include rate codes 1–5 only.</li>
+                    <li>70% of the trips have only one passenger while there are trips with zero passengers. It's unreasonable to charge for trips with no passengers and we'll therefore exclude those trips. Additionally, we can limit the variable to a maximum of 6 passengers to be on the safe side.</li>
+                    <li>The busies pickup hours are in the late afternoon throughout late evening. However, it's fairly consistent between 11:00 and 22:59 with some occasional dips around 13 and 16. The least busy hours are early mornings from 03:00 to 05:59. This seem reasonable and maps well with working hours.</li>
+                    <li>The busiest days of the week are Thursdays and Fridays. But it's fairly consistent with little more than 10% difference between Sunday lows and Friday peaks.</li>
+                    <li><i>Averaged over all years</i>, May, July and October seem to be the busiest months, while June and August are least busy. This seem to hold true even if we additionally split it up by month as shown below.</li>
+                    <li>Most trips are registered during 2013 while fewest in 2015. However, as displayed more clearly below, 2015 contain only trips during the first six months of the year (light green bar).</li>
+                </ul>
+
+                <figure class="full-image figure-specs">
+                    <a href="nyc-taxi-cabs/trips_per_year_month.png"><img class="full-image" src="nyc-taxi-cabs/trips_per_year_month.png" alt="Checking for Simpson's paradox"></a>
+                    <figcaption class="figure-caption">Checking for Simpson's paradox</figcaption>
+                </figure>
+
+                <h3 class="top-margin-h3">Continuous Variables</h3>
+                <p>Next up, we will take a closer look at the continuous variables by plotting them using histograms.</p>
+
+                <figure class="full-image figure-specs">
+                    <a href="nyc-taxi-cabs/continuous_variables.png"><img class="full-image" src="nyc-taxi-cabs/continuous_variables.png" alt="Continuous variables. Both unreasonable negative and high values."></a>
+                    <figcaption class="figure-caption">Continuous variables. Both unreasonable negative and high values.</figcaption>
+                </figure>
+
+                <p>Among other things, we learn the following from above plots:</p>
+                <ul class="li-space">
+                    <li><span class="inline-code">total_amount</span> includes negative values, which is rather counterintuitive. See below for how we approach this.</li>
+                    <li>Around 55% of the trips have zero tip. $1 and $2 tip amounts are the most common when tip is given. However, due to its nature of being a decision made by the rider, we will exclude this column and calculate <span class="inline-code">total_amount</span> as <span class="inline-code">fare_amount</span> + <span class="inline-code">tolls_amount</span>.</li>
+                    <li>There are negative values in <span class="inline-code">fare_amount</span>. We exclude all values that are zero or lower and set the upper threshold at $500.</li>
+                    <li>Most trips (96%) don't include tolls. We can limit <span class="inline-code">tolls_amount</span> to the range [0, 25].</li>
+                </ul>
+
+                <figure class="full-image figure-specs">
+                    <a href="nyc-taxi-cabs/long_distance_low_fare.png"><img class="full-image" src="nyc-taxi-cabs/long_distance_low_fare.png" alt="Long trips above 100km but with a total fare amount of less than $10."></a>
+                    <figcaption class="figure-caption">Long trips above 100km but with a total fare amount of less than $10.</figcaption>
+                </figure>
+
+                <ul>
+                    <li>Some long trips (>100km) have unreasonable low total fare amount (<$10) with questionable trip duration. Let's exclude those. We can also set a restriction to only include trips below 160km to assure we stay within the city area.</li>
+                </ul>
+
+                <figure class="full-image figure-specs">
+                    <script src="https://gist.github.com/JakobLS/7ddfb3b941a99a577337392498e297fa.js"></script>
+                    <figcaption class="figure-caption"></figcaption>
+                </figure>
+
+                <ul>
+                    <li>There are many trips that have zero or negative <span class="inline-code">trip_duration</span> (521 in total), while others are taking very long time. Some are as long as almost 24 hours. I'm displaying trips that take more than 3 hours (180 min) below. Most of them are shorter than 5km. Perhaps they got stuck in traffic, but it's doubtful whether anyone would be stuck for nearly 24 hours. Although it's not unreasonable for taxi rides to take many hours (perhaps someone took one to Chicago), we will focus on trips in the closer vicinity of NY City and will thus exclude these data points. We'll specify the acceptable range to [0, 180].</li>
+                </ul>
+
+                <figure class="full-image figure-specs">
+                    <a href="nyc-taxi-cabs/long_trip_duration.png"><img class="full-image" src="nyc-taxi-cabs/long_trip_duration.png" alt="Trips that take over 3 hours. Most are questionably short."></a>
+                    <figcaption class="figure-caption">Trips that take over 3 hours. Most are questionably short.</figcaption>
+                </figure>
+
+                <h3 class="top-margin-h3">Calculate Correlation between Features and Total Trip Amount</h3>
+
+                <p>To better understand the relationship between the target variable and the features in the dataset, we will calculate Pearson correlation among the columns and display the result in something referred to as a correlation matrix.</p>
+
+                <figure class="full-image figure-specs">
+                    <a href="nyc-taxi-cabs/correlation_matrix_no_title.png"><img class="full-image" src="nyc-taxi-cabs/correlation_matrix_no_title.png" alt="Pearson correlation matrix. Total amount is highly correlated with the fare, tolls and tip amounts as well as the trip distance and duration."></a>
+                    <figcaption class="figure-caption">Pearson correlation matrix. Total amount is highly correlated with the fare, tolls and tip amounts as well as the trip distance and duration.</figcaption>
+                </figure>
+
+                <ul class="li-space">
+                    <li>We note that <span class="inline-code">total_amount</span> is highly correlated with <span class="inline-code">fare_amount</span>, <span class="inline-code">trip_distance</span>, <span class="inline-code">tolls_amount</span>, <span class="inline-code">tip_amount</span> and <span class="inline-code">trip_duration</span>. This seems reasonable as we would expect longer trips, both in time and distance, to cost more.</li>
+                    <li>There is a weak correlation with <span class="inline-code">pickup_year</span>. This also seems fairly reasonable as we can expect fares to change slightly over time.</li>
+                    <li>The correlation is negligible for most other features such as pickup and drop-off coordinates. In isolation, this is reasonable. However, when combining longitude and latitude to form the exact pickup and drop-off locations we would expect this to affect the total fare. Above correlation matrix is unable to calculate pairwise correlations though and we would have to engineer this relationship ourselves. We will do this in a later step. Depending on how the taxi company sets its pricing, we would perhaps also expect <span class="inline-code">pickup_hour</span> to affect the fare amount more (rides might be more expensive during peak hours for example).</li>
+                </ul>
+
+                <h3 class="top-margin-h3">Display Pickup and Drop-off Locations on a Map</h3>
+                <p>Plot the pickup and drop-off locations over a map of NY City to get a better understanding of their location.</p>
+
+                <figure class="full-image figure-specs">
+                    <a href="nyc-taxi-cabs/trip_locations_map.png"><img class="full-image" src="nyc-taxi-cabs/trip_locations_map.png" alt="Pickup and drop-off locations. Most trips are located within the vicinity of the city area. Data points that are within the blue and red shaded areas will be excluded."></a>
+                    <figcaption class="figure-caption">Pickup and drop-off locations. Most trips are located within the vicinity of the city area. Data points that are within the blue and red shaded areas will be excluded.</figcaption>
+                </figure>
+
+                <p>We can confirm that most trips are concentrated within the city area.</p>
+
+                <p>However, there are also seemingly erroneous data points with pickup and/or drop-off locations in the ocean. One way to approach this is to exclude trips that are below latitude 40.55 while at the same time located east of longitude -73.9 (blue and red shaded areas). We can specify overall latitude limits to [40, 42] and longitudes to [-76, -73]. This also excludes some unreasonably high (pickup coordinates above 1,500) and low (pickup longitudes at -2,600 and 0) coordinates which were identified before.</p>
+
+                <h2 class="top-margin-h2">Machine Learning with BigQuery ML</h2>
+                
+                <p>Now comes the most exciting part; applying machine learning to make predictions on the total fare amount. To save on development costs and to speed things up, we will approach this as before; starting out with a smaller dataset for experimentation, and once a satisfying result is achieved, we train a model on the entire dataset. Although much of it can be completely automated in BigQuery, we will take it step by step as it will be easier to follow along.</p>
+
+                <p>BigQuery makes it simple to apply a variety of <a href="https://cloud.google.com/bigquery-ml/docs/introduction#supported_models_in">different models</a> on the data. Although it's best practice to experiment with several different models, for the purpose of this article, we will go with Linear Regression only. Even though there are differences in data preparation and hyperparameters between the models, the general steps are common. Linear Regression is fast to train but requires more work in order to map the interrelationship between features for best performance. We will cover this in more depth in model 4 below.</p>
+
+                <p>We can set the baseline to beat at $9.8, which is equivalent to the standard deviation. However, we want to be a little more ambitious than that and will set the goal to below $3.</p>
+
+                <div class="quote-div-outer">
+                    <div class="quote-div-inner quote-text">
+                        <p>Goal: Below $3.</p>
+                    </div>
+                </div>
+
+                <h3 class="top-margin-h3">Create Data Table for Machine Learning and Exclude Irrelevant Values</h3>
+
+                <p>Based on what we've learned from the exploratory data analysis earlier, we can now go ahead and create a training data table. We will also make sure to order the data by <span class="inline-code">dropoff_time</span>. This way we'll be making predictions on future trips which is more similar to a real-world setting. There's also the risk of trips on the same day being correlated due to traffic conditions and so forth. Ordering by date might help to mitigate this. The query for creating a data table using the constraints we decided during the EDA while keeping the data size as before looks as follows:</p>
+
+                <figure class="full-image figure-specs">
+                    <script src="https://gist.github.com/JakobLS/1518625ece85c32a76685b566b1ab1cf.js"></script>
+                    <figcaption class="figure-caption"></figcaption>
+                </figure>
+
+                <p>Before moving on, we'll confirm that all values are within acceptable range.</p>
+
+                <figure class="full-image figure-specs">
+                    <a href="nyc-taxi-cabs/describe_with_constraints.png"><img class="full-image" src="nyc-taxi-cabs/describe_with_constraints.png" alt="Confirming that all variables are within acceptable range."></a>
+                    <figcaption class="figure-caption">Confirming that all variables are within acceptable range.</figcaption>
+                </figure>
+
+                <h3 class="top-margin-h3">Model 1: Three Features only</h3>
+                <p>We will start out humbly by only including three features:</p>
+
+                <ul>
+                    <li><span class="inline-code">trip_distance</span></li>
+                    <li><span class="inline-code">rate_code</span></li>
+                    <li><span class="inline-code">passenger_count</span></li>
+                </ul>
+
+                <p>The target variable is the total trip amount, <span class="inline-code">total_amount</span> while we will be using <span class="inline-code">dropoff_time</span> to split the data sequentially to maintain trip date ordering. BigQuery splits the data for us automatically into train and evaluation sets so we don't have to worry about that.</p>
+
+
+                <figure class="full-image figure-specs">
+                    <script src="https://gist.github.com/JakobLS/faf9ec15aac9c93591ab39d76f654a25.js"></script>
+                    <figcaption class="figure-caption">Train the first model.</figcaption>
+                </figure>
+
+                <p>We use the following SQL to evaluate the model on the train set.</p>
+
+                <figure class="full-image figure-specs">
+                    <script src="https://gist.github.com/JakobLS/bc4874e0aa49b9e0d2155bc32a3a36e4.js"></script>
+                    <figcaption class="figure-caption"></figcaption>
+                </figure> 
+
+                <p>And the following to evaluate it on the test set.</p>
+
+                <figure class="full-image figure-specs">
+                    <script src="https://gist.github.com/JakobLS/8693de374cde95d334b042aaa90be96b.js"></script>
+                    <figcaption class="figure-caption"></figcaption>
+                </figure> 
+
+                <p>We get an RMSE of 3.34 on the test set and 3.26 on the train set on the first attempt - significantly better than the 9.8 baseline and pretty close to the goal of 3.0! BigQuery also provides us with other evaluation metrics by default as well as the possibility to completely customise them. However, RMSE has the advantage of providing the error in the unit being measured (which is USD in this case) and is thus easier for the human eye to interpret.</p>
+
+                <h3 class="top-margin-h3">Models 2-4</h3>
+                <p>Equivalent steps are taken for models 2–4 where we add the following features:</p>
+
+                <p><b>Model 2:</b></p>
+                <ul>
+                    <li><span class="inline-code">trip_distance</span></li>
+                    <li><span class="inline-code">rate_code</span></li>
+                    <li><span class="inline-code">passenger_count</span></li>
+                    <li><span class="inline-code">trip_duration</span></li>
+                    <li><span class="inline-code">pickup_longitude</span> and <span class="inline-code">pickup_latitude</span></li>
+                    <li><span class="inline-code">dropoff_longitude</span> and <span class="inline-code">dropoff_latitude</span></li>
+                </ul>
+
+                <p><b>Model 3:</b> Extract hour, weekday, month and year from the <span class="inline-code">pickup_datetime</span> column:</p>
+
+                <ul>
+                    <li><span class="inline-code">pickup_hour</span>: Pickup hour during the day for the trip (24 hours)</li>
+                    <li><span class="inline-code">pickup_day </span>: Pickup day in the week (Monday - Sunday)</li>
+                    <li><span class="inline-code">pickup_month </span>: Pickup month (January - December)</li>
+                    <li><span class="inline-code">pickup_year</span>: Pickup year (2009 - 2015)</li>
+                </ul>
+
+                <p>Unlike when we extracted weekday with Pandas, where the week started with Monday, BigQuery's <span class="inline-code">DAYOFWEEK</span> assumes Sunday to be the start of the week. However, for the purpose of this analysis, it shouldn't make a difference.</p>
+
+                <p><b>Model 4:</b> Engineer new features by combining two or more current features into new ones. The idea is to better map the information within the data so that the model can better learn from it. However, this comes with an additional risk of overfitting and subsequent model performance decline if not addressed.</p>
+
+                <ul class="li-space">
+                    <li><span class="inline-code">euclidean</span>: Calculate the shortest distance between two points on the map.</li>
+                    <li><span class="inline-code">day_hour</span>: A combination of weekday and hour to map the hour in the week. Mornings during the week might have other characteristics, such as being busier, than mornings during the weekend, for example.</li>
+                    <li><span class="inline-code">month_hour</span>: A combination of month and hour to map the hour in a month for the trip.</li>
+                </ul>
+
+                <p>This leads us to the following query for model 4:</p>
+
+                <figure class="full-image figure-specs">
+                    <script src="https://gist.github.com/JakobLS/e7676e5ee8897c8a05a1b942070ad5a7.js"></script>
+                    <figcaption class="figure-caption"></figcaption>
+                </figure> 
+
+                <p>The additional features allow the model to fit the data a little better, yielding an RMSE of 2.27 on the test set and 2.38 on the train set.</p>
+
+                <p><b>Model 5</b>: Although the model is not overfitting much, we can experiment with regularisation to see if we can push the test RMSE closer to the train RMSE. It's a common approach and there are two main ways to do that with Linear Regression; L1 and L2. We won't go into the details of how they work other than mentioning that L1 decreases (and even removes) the importance of the least important features, while L2 shrinks the importance of all features. The degree to how much this is done can be tuned and is specific for each use case and dataset.</p>
+
+                <p>For the purpose of this blog post we will focus on L1 and experiment with values <span class="inline-code">[0, 0.1, 1, 10]</span>. Executing it in parallel will speed things up. BigQuery splits the data into <span class="inline-code">80:10:10</span> train-evaluate-test sets by default during hyperparameter tuning and we won't interfere with that. The model is trained on the train set before evaluated on the evaluation set during each one of the four runs (four because we will evaluate four values of L1). Lastly, the final model performance is calculated by testing it on the test set which the model hasn't seen before. All this is done automatically by BigQuery.</p>
+
+                <p>By wrapping the features within the <span class="inline-code">TRANSFORM</span> clause we ensure that the same pre-processing steps taken during training are applied during evaluation and model deployment. Applying all the steps from above, this is how the query looks like:</p>
+
+                <figure class="full-image figure-specs">
+                    <script src="https://gist.github.com/JakobLS/98f4c832bbbbb9f2bd158f6e09923302.js"></script>
+                    <figcaption class="figure-caption"></figcaption>
+                </figure> 
+
+                <p>No regularisation <span class="inline-code">(L1 = 0.0)</span> results in the best model with an RMSE on the test set of 2.33 and 2.22 on the evaluation set (see below). Note that since the data has been split into three sets during the hyperparameter tuning process, rather than previously two, the results are not exactly the same as for model 4 even though the regularisation parameter hasn't changed.</p>
+
+                <figure class="full-image figure-specs">
+                    <a href="nyc-taxi-cabs/model_5_train_eval_rmse.png"><img class="full-image" src="nyc-taxi-cabs/model_5_train_eval_rmse.png" alt="RMSE on the train (2.38) and evaluation (2.22) sets."></a>
+                    <figcaption class="figure-caption">RMSE on the train (2.38) and evaluation (2.22) sets.</figcaption>
+                </figure>
+
+                <figure class="full-image figure-specs">
+                    <a href="nyc-taxi-cabs/model_5_test_rmse.png"><img class="full-image" src="nyc-taxi-cabs/model_5_test_rmse.png" alt="2.33 RMSE on the test set."></a>
+                    <figcaption class="figure-caption">2.33 RMSE on the test set.</figcaption>
+                </figure>
+
+                <h2 class="top-margin-h2">Train on All the Data</h2>
+
+                <p>We've found the most optimal set of hyperparameters, engineered extra features, saved both time and money on the small dataset and can now move forward by training on the full, 1 billion trips, dataset.</p>
+
+                <p>To start, query the original dataset to create a new table including all the rows while still applying the same constraints as before.</p>
+
+                <figure class="full-image figure-specs">
+                    <script src="https://gist.github.com/JakobLS/47c7fdb80fdb5dc9f4243bf284814167.js"></script>
+                    <figcaption class="figure-caption">Create data table using the full dataset.</figcaption>
+                </figure>
+
+                <p>Before initiating model training, verify that the columns are all within expected values.</p>
+
+                <figure class="full-image figure-specs">
+                    <script src="https://gist.github.com/JakobLS/b13069abdd2f5883561440fbeec70b5a.js"></script>
+                    <figcaption class="figure-caption">Query to validate data.</figcaption>
+                </figure>
+
+                <p>Which gives us the following result.</p>
+
+                <figure class="full-image figure-specs">
+                    <script src="https://gist.github.com/JakobLS/bf2e61933de94a3bf01e977c71848c1f.js"></script>
+                    <figcaption class="figure-caption">All data seem to be within expected values.</figcaption>
+                </figure>
+
+                <h3 class="top-margin-h3">Final Model</h3>
+
+                <p>We are pretty pleased with these insights and can now move forward with model training on the full data. The query looks almost identical to the one we used for model 5, with the only difference being the data source we're querying from at the very bottom. I will thus not write out the entire query again but instead refer to the GitHub repo where all steps are present.</p>
+
+                <div class="quote-div-outer">
+                    <div class="quote-div-inner quote-text">
+                        <p>Training the model on 1 billion trips takes around 21 minutes at a cost of less than $20.</p>
+                    </div>
+                </div>
+
+                <p>Training the model on 1 billion trips takes around 21 minutes at a cost of less than $20. We end up with a final RMSE on the train set of 2.36 and 2.59 on the test set. This is a little worse than what we achieved with model 5 which was trained on only 100k samples. There are some minor indications of overfitting (because the RMSE discrepancy between the train and test sets has increased) and perhaps adding regularisation when training on the full dataset would be beneficial after all. We won't iterate on that here other than pointing it out.</p>
+                <hr>
+                <p>A summary on the train and test sets of all the models we've trained is found below. The best performance is achieved with models 3 and 4, taking into account that they were only trained on a subset of the data. We note the slight increase in overfitting on the final model.</p>
+
+                <figure class="full-image figure-specs">
+                    <a href="nyc-taxi-cabs/rmse_model_summary.png"><img class="full-image" src="nyc-taxi-cabs/rmse_model_summary.png" alt="RMSE model summary. Models 1–5 were trained on 100k samples while the final model was trained on 1 billion samples."></a>
+                    <figcaption class="figure-caption">RMSE model summary. Models 1–5 were trained on 100k samples while the final model was trained on 1 billion samples.</figcaption>
+                </figure>
+
+                <h2 class="top-margin-h2">Model Prediction and Analysis</h2>
+
+                <p>What purpose has a model if we don't use it to make predictions with? Query 1 million samples and use the model to make predictions on them. Also, calculate the prediction errors by taking the difference between the prediction and the true label. The query looks like this:</p>
+
+                <figure class="full-image figure-specs">
+                    <script src="https://gist.github.com/JakobLS/2d51c6aff1e8044bd4d18e6d137bedf9.js"></script>
+                    <figcaption class="figure-caption">Query a million samples and use the model to make predictions on them.</figcaption>
+                </figure>
+
+                <p>We can then display the prediction error distribution and perform some basic analysis on the model performance.</p>
+
+                <figure class="full-image figure-specs">
+                    <a href="nyc-taxi-cabs/prediction_error.png"><img class="full-image" src="nyc-taxi-cabs/prediction_error.png" alt="95% of the prediction errors are lower than ±$2.5."></a>
+                    <figcaption class="figure-caption">95% of the prediction errors are lower than ±$2.5.</figcaption>
+                </figure>
+
+                <p>95% of the prediction errors are lower than ±2.5 USD, which is in line with the RMSE on the test set. However, there are some predictions that are off by more than $100 in both directions as displayed below.</p>
+
+                <figure class="full-image figure-specs">
+                    <a href="nyc-taxi-cabs/bad_predictions.png"><img class="full-image" src="nyc-taxi-cabs/bad_predictions.png" alt="Predictions with very high errors (>±$100)."></a>
+                    <figcaption class="figure-caption">Predictions with very high errors (>±$100).</figcaption>
+                </figure>
+
+                <p>Let's take a closer look at some of those:</p>
+
+                <ul class="li-space">
+                    <li><i>Trip #27411</i> (see above): This trip is labelled with a total trip amount of $0.02 despite taking almost 2 hours (112 min) at a distance of 90km. It's weird. The data thus seem to be inaccurate in one way or another which could then explain the $173 prediction error.</li>
+
+                    <li><i>Trip #33913</i>: A very low total fare amount ($9) despite long in both duration and distance. We might have a data issue here as well.</li>
+
+                    <li><i>Trip #10087</i> This is the trip with the largest (underestimated) error at -$321. The labelled total amount is $495. It might be an accurate data point since it's marked as a negotiated fare (<span class="inline-code">rate_code</span> = 5), meaning that the driver and rider agreed on a fare. Perhaps the rider was in a hurry and also needed to make some errands along the way and was happy to pay a premium for this. However, both the trip distance and duration are very similar to that of trip #27411 so it's not unreasonable to think that they should have roughly the same price. Not 3 times more. The model certainly estimates along these lines as well.</li>
+                </ul>
+
+                <p>Negotiated fare is highly overrepresented with almost 30% of the trips (see the plot below) among trips with large errors. This is in large contrast to the general distribution of the dataset where negotiated fares make up only 0.2%. Perhaps negotiated fares are more random or have some other characteristics that makes them harder to predict. We should find ways of better mapping this if we want to improve model performance in the extremes.</p>
+                
+                <div class="images-div">
+                    <figure class="full-image figure-specs">
+                        <a href="nyc-taxi-cabs/rate_counts_bad_predictions.png"><img class="full-image" src="nyc-taxi-cabs/rate_counts_bad_predictions.png" alt="Negotiated fare is overrepresented among predictions with high errors."></a>
+                        <figcaption class="figure-caption">Negotiated fare is overrepresented among predictions with high errors.</figcaption>
+                    </figure>
+                </div>
+
+                <p>There are thus several data points where we can question the validity of the data. Perhaps it's not the model that's doing bad but poor data that's behind the large prediction errors we experience on at least some of these trips.</p>
+
+                <p>We can also verify that most trips take place within, or very close to New York and its vicinity by plotting them on a map. This way we can visually confirm that most of them are of shorter distance.</p>
+
+                <div>
+                    <figure class="full-image figure-specs">
+                        <a href="nyc-taxi-cabs/high_prediction_errors_on_map.png"><img class="full-image" src="nyc-taxi-cabs/high_prediction_errors_on_map.png" alt="Displaying trips with high prediction errors on a map over NY City."></a>
+                        <figcaption class="figure-caption">Displaying trips with high prediction errors on a map over NY City.</figcaption>
+                    </figure>
+                </div>
+
+                <h2 class="top-margin-h2">Summary</h2>
+
+                <p>We've used BigQuery to load a dataset containing over 1 billion samples, visualised it and trained some models to predict the total taxi ride fare. We started with a smaller fraction of the dataset to better being able to visualise it and to save on query and model iteration costs. We also confirmed our intuition that trip distance and duration are highly correlated with the total fare amount, and showed that <i>training the model on the entire dataset took no longer than 21 minutes at a cost of less than $20</i>. Lastly, we also explored the prediction errors and their characteristics where we probably found additional data inaccuracies.</p>
+
+                <p>Although the article ended up longer than I first expected, there are many more potential paths to explore. Adding other external data sources such as weather conditions or events (e.g., festivals, holidays) may help boost the model performance, as can engineering more features to better map the total fare. We spent very little time tuning the hyperparameters which may add important improvements. Additionally, there's room for significantly more analysis in terms of better interpreting and understanding the results.</p>
+
+                <p>Only Linear Regression was used because it's comparably very fast to train. But there are more models to choose from (many of them available through BigQuery ML), some of which likely can decrease the error. In fact, I did a quick check with XGBoost on the smaller dataset and it decreased the error by around 25% off-the-shelf. It came with the drawback of taking around 10 times longer to train though.</p>
+
+                <div class="bottom-space">
+                </div>
+            </div>
+        </div>
+
+    </main>
+    <footer class="footer">
+      <div>
+      </div>
+    </footer>
+  </body>
+</html>
+
+
+
+
+
+
