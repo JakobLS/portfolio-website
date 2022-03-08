@@ -300,7 +300,7 @@ a:active  {color: #A9A9A9;}
 .images-div {
   margin: 0 auto;
   text-align: center;
-  width: 80%
+  width: 100%
 }
 
 .figure-caption {
@@ -472,6 +472,9 @@ a:active  {color: #A9A9A9;}
     font-size: 120%;
   }
 
+  .images-div {
+    width: 80%
+  }
 
 }
 
