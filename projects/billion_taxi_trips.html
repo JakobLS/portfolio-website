@@ -47,7 +47,7 @@
                 <p>I will mainly work in a <a href="https://cloud.google.com/vertex-ai-workbench" target="_blank" rel="noopener">Jupyter notebook environment hosted on Google Cloud Platform</a> to facilitate the documentation of each step. The complete notebook with more details can be <a href="https://github.com/JakobLS/billion_taxi_trips">accessed on GitHub</a>.</p>
 
                 <figure class="full-image figure-specs">
-                    <a href="nyc-taxi-cabs/cars_wide.jpeg"><img class="full-image" src="nyc-taxi-cabs/cars_wide.jpeg" alt="A billion taxi trips"></a>
+                    <a href="../images/nyc-taxi-cabs/cars_wide.jpeg"><img class="full-image" src="../images/nyc-taxi-cabs/cars_wide.jpeg" alt="A billion taxi trips"></a>
                     <figcaption class="figure-caption">A billion taxi trips</figcaption>
                 </figure>
 
@@ -63,7 +63,7 @@
                 <p>We can now calculate some descriptive statistics to get a better understanding of the data.</p>
 
                 <figure class="full-image figure-specs">
-                    <a href="nyc-taxi-cabs/describe.png"><img class="full-image" src="nyc-taxi-cabs/describe.png" alt="Descriptive statistics"></a>
+                    <a href="../images/nyc-taxi-cabs/describe.png"><img class="full-image" src="../images/nyc-taxi-cabs/describe.png" alt="Descriptive statistics"></a>
                     <figcaption class="figure-caption">Descriptive statistics</figcaption>
                 </figure>   
 
@@ -92,7 +92,7 @@
                 <p>Columns <span class="inline-code">passenger_count</span>, <span class="inline-code">pickup_hour</span>, <span class="inline-code">day_of_week</span>, <span class="inline-code">pickup_month</span> and <span class="inline-code">pickup_year</span> are all discrete ordinal variables (i.e., there is a natural ordering of the values where 14:00 comes before 15:00, and so forth). In terms of <span class="inline-code">rate_code</span> however, there is no such interrelationship between, for example, group 1 (standard fare) and 2 (JFK); it makes little sense to say that standard fare comes before an airport fare.</p>
 
                 <figure class="full-image figure-specs">
-                    <a href="nyc-taxi-cabs/categorical_variables.png"><img class="full-image" src="nyc-taxi-cabs/categorical_variables.png" alt="Categorical variables and their respective counts"></a>
+                    <a href="../images/nyc-taxi-cabs/categorical_variables.png"><img class="full-image" src="../images/nyc-taxi-cabs/categorical_variables.png" alt="Categorical variables and their respective counts"></a>
                     <figcaption class="figure-caption">Categorical variables and their respective counts</figcaption>
                 </figure>
 
@@ -108,7 +108,7 @@
                 </ul>
 
                 <figure class="full-image figure-specs">
-                    <a href="nyc-taxi-cabs/trips_per_year_month.png"><img class="full-image" src="nyc-taxi-cabs/trips_per_year_month.png" alt="Checking for Simpson's paradox"></a>
+                    <a href="../images/nyc-taxi-cabs/trips_per_year_month.png"><img class="full-image" src="../images/nyc-taxi-cabs/trips_per_year_month.png" alt="Checking for Simpson's paradox"></a>
                     <figcaption class="figure-caption">Checking for Simpson's paradox</figcaption>
                 </figure>
 
@@ -116,7 +116,7 @@
                 <p>Next up, we will take a closer look at the continuous variables by plotting them using histograms.</p>
 
                 <figure class="full-image figure-specs">
-                    <a href="nyc-taxi-cabs/continuous_variables.png"><img class="full-image" src="nyc-taxi-cabs/continuous_variables.png" alt="Continuous variables. Both unreasonable negative and high values."></a>
+                    <a href="../images/nyc-taxi-cabs/continuous_variables.png"><img class="full-image" src="../images/nyc-taxi-cabs/continuous_variables.png" alt="Continuous variables. Both unreasonable negative and high values."></a>
                     <figcaption class="figure-caption">Continuous variables. Both unreasonable negative and high values.</figcaption>
                 </figure>
 
@@ -129,7 +129,7 @@
                 </ul>
 
                 <figure class="full-image figure-specs">
-                    <a href="nyc-taxi-cabs/long_distance_low_fare.png"><img class="full-image" src="nyc-taxi-cabs/long_distance_low_fare.png" alt="Long trips above 100km but with a total fare amount of less than $10."></a>
+                    <a href="../images/nyc-taxi-cabs/long_distance_low_fare.png"><img class="full-image" src="../images/nyc-taxi-cabs/long_distance_low_fare.png" alt="Long trips above 100km but with a total fare amount of less than $10."></a>
                     <figcaption class="figure-caption">Long trips above 100km but with a total fare amount of less than $10.</figcaption>
                 </figure>
 
@@ -147,7 +147,7 @@
                 </ul>
 
                 <figure class="full-image figure-specs">
-                    <a href="nyc-taxi-cabs/long_trip_duration.png"><img class="full-image" src="nyc-taxi-cabs/long_trip_duration.png" alt="Trips that take over 3 hours. Most are questionably short."></a>
+                    <a href="../images/nyc-taxi-cabs/long_trip_duration.png"><img class="full-image" src="../images/nyc-taxi-cabs/long_trip_duration.png" alt="Trips that take over 3 hours. Most are questionably short."></a>
                     <figcaption class="figure-caption">Trips that take over 3 hours. Most are questionably short.</figcaption>
                 </figure>
 
@@ -156,7 +156,7 @@
                 <p>To better understand the relationship between the target variable and the features in the dataset, we will calculate Pearson correlation among the columns and display the result in something referred to as a correlation matrix.</p>
 
                 <figure class="full-image figure-specs">
-                    <a href="nyc-taxi-cabs/correlation_matrix_no_title.png"><img class="full-image" src="nyc-taxi-cabs/correlation_matrix_no_title.png" alt="Pearson correlation matrix. Total amount is highly correlated with the fare, tolls and tip amounts as well as the trip distance and duration."></a>
+                    <a href="../images/nyc-taxi-cabs/correlation_matrix_no_title.png"><img class="full-image" src="../images/nyc-taxi-cabs/correlation_matrix_no_title.png" alt="Pearson correlation matrix. Total amount is highly correlated with the fare, tolls and tip amounts as well as the trip distance and duration."></a>
                     <figcaption class="figure-caption">Pearson correlation matrix. Total amount is highly correlated with the fare, tolls and tip amounts as well as the trip distance and duration.</figcaption>
                 </figure>
 
@@ -170,7 +170,7 @@
                 <p>Plot the pickup and drop-off locations over a map of NY City to get a better understanding of their location.</p>
 
                 <figure class="full-image figure-specs">
-                    <a href="nyc-taxi-cabs/trip_locations_map.png"><img class="full-image" src="nyc-taxi-cabs/trip_locations_map.png" alt="Pickup and drop-off locations. Most trips are located within the vicinity of the city area. Data points that are within the blue and red shaded areas will be excluded."></a>
+                    <a href="../images/nyc-taxi-cabs/trip_locations_map.png"><img class="full-image" src="../images/nyc-taxi-cabs/trip_locations_map.png" alt="Pickup and drop-off locations. Most trips are located within the vicinity of the city area. Data points that are within the blue and red shaded areas will be excluded."></a>
                     <figcaption class="figure-caption">Pickup and drop-off locations. Most trips are located within the vicinity of the city area. Data points that are within the blue and red shaded areas will be excluded.</figcaption>
                 </figure>
 
@@ -204,7 +204,7 @@
                 <p>Before moving on, we'll confirm that all values are within acceptable range.</p>
 
                 <figure class="full-image figure-specs">
-                    <a href="nyc-taxi-cabs/describe_with_constraints.png"><img class="full-image" src="nyc-taxi-cabs/describe_with_constraints.png" alt="Confirming that all variables are within acceptable range."></a>
+                    <a href="../images/nyc-taxi-cabs/describe_with_constraints.png"><img class="full-image" src="../images/nyc-taxi-cabs/describe_with_constraints.png" alt="Confirming that all variables are within acceptable range."></a>
                     <figcaption class="figure-caption">Confirming that all variables are within acceptable range.</figcaption>
                 </figure>
 
@@ -296,12 +296,12 @@
                 <p>No regularisation <span class="inline-code">(L1 = 0.0)</span> results in the best model with an RMSE on the test set of 2.33 and 2.22 on the evaluation set (see below). Note that since the data has been split into three sets during the hyperparameter tuning process, rather than previously two, the results are not exactly the same as for model 4 even though the regularisation parameter hasn't changed.</p>
 
                 <figure class="full-image figure-specs">
-                    <a href="nyc-taxi-cabs/model_5_train_eval_rmse.png"><img class="full-image" src="nyc-taxi-cabs/model_5_train_eval_rmse.png" alt="RMSE on the train (2.38) and evaluation (2.22) sets."></a>
+                    <a href="../images/nyc-taxi-cabs/model_5_train_eval_rmse.png"><img class="full-image" src="../images/nyc-taxi-cabs/model_5_train_eval_rmse.png" alt="RMSE on the train (2.38) and evaluation (2.22) sets."></a>
                     <figcaption class="figure-caption">RMSE on the train (2.38) and evaluation (2.22) sets.</figcaption>
                 </figure>
 
                 <figure class="full-image figure-specs">
-                    <a href="nyc-taxi-cabs/model_5_test_rmse.png"><img class="full-image" src="nyc-taxi-cabs/model_5_test_rmse.png" alt="2.33 RMSE on the test set."></a>
+                    <a href="../images/nyc-taxi-cabs/model_5_test_rmse.png"><img class="full-image" src="../images/nyc-taxi-cabs/model_5_test_rmse.png" alt="2.33 RMSE on the test set."></a>
                     <figcaption class="figure-caption">2.33 RMSE on the test set.</figcaption>
                 </figure>
 
@@ -345,7 +345,7 @@
                 <p>A summary on the train and test sets of all the models we've trained is found below. The best performance is achieved with models 3 and 4, taking into account that they were only trained on a subset of the data. We note the slight increase in overfitting on the final model.</p>
 
                 <figure class="full-image figure-specs">
-                    <a href="nyc-taxi-cabs/rmse_model_summary.png"><img class="full-image" src="nyc-taxi-cabs/rmse_model_summary.png" alt="RMSE model summary. Models 1–5 were trained on 100k samples while the final model was trained on 1 billion samples."></a>
+                    <a href="../images/nyc-taxi-cabs/rmse_model_summary.png"><img class="full-image" src="../images/nyc-taxi-cabs/rmse_model_summary.png" alt="RMSE model summary. Models 1–5 were trained on 100k samples while the final model was trained on 1 billion samples."></a>
                     <figcaption class="figure-caption">RMSE model summary. Models 1–5 were trained on 100k samples while the final model was trained on 1 billion samples.</figcaption>
                 </figure>
 
@@ -361,14 +361,14 @@
                 <p>We can then display the prediction error distribution and perform some basic analysis on the model performance.</p>
 
                 <figure class="full-image figure-specs">
-                    <a href="nyc-taxi-cabs/prediction_error.png"><img class="full-image" src="nyc-taxi-cabs/prediction_error.png" alt="95% of the prediction errors are lower than ±$2.5."></a>
+                    <a href="../images/nyc-taxi-cabs/prediction_error.png"><img class="full-image" src="../images/nyc-taxi-cabs/prediction_error.png" alt="95% of the prediction errors are lower than ±$2.5."></a>
                     <figcaption class="figure-caption">95% of the prediction errors are lower than ±$2.5.</figcaption>
                 </figure>
 
                 <p>95% of the prediction errors are lower than ±2.5 USD, which is in line with the RMSE on the test set. However, there are some predictions that are off by more than $100 in both directions as displayed below.</p>
 
                 <figure class="full-image figure-specs">
-                    <a href="nyc-taxi-cabs/bad_predictions.png"><img class="full-image" src="nyc-taxi-cabs/bad_predictions.png" alt="Predictions with very high errors (>±$100)."></a>
+                    <a href="../images/nyc-taxi-cabs/bad_predictions.png"><img class="full-image" src="../images/nyc-taxi-cabs/bad_predictions.png" alt="Predictions with very high errors (>±$100)."></a>
                     <figcaption class="figure-caption">Predictions with very high errors (>±$100).</figcaption>
                 </figure>
 
@@ -386,7 +386,7 @@
                 
                 <div class="images-div">
                     <figure class="full-image figure-specs">
-                        <a href="nyc-taxi-cabs/rate_counts_bad_predictions.png"><img class="full-image" src="nyc-taxi-cabs/rate_counts_bad_predictions.png" alt="Negotiated fare is overrepresented among predictions with high errors."></a>
+                        <a href="../images/nyc-taxi-cabs/rate_counts_bad_predictions.png"><img class="full-image" src="../images/nyc-taxi-cabs/rate_counts_bad_predictions.png" alt="Negotiated fare is overrepresented among predictions with high errors."></a>
                         <figcaption class="figure-caption">Negotiated fare is overrepresented among predictions with high errors.</figcaption>
                     </figure>
                 </div>
@@ -397,7 +397,7 @@
 
                 <div>
                     <figure class="full-image figure-specs">
-                        <a href="nyc-taxi-cabs/high_prediction_errors_on_map.png"><img class="full-image" src="nyc-taxi-cabs/high_prediction_errors_on_map.png" alt="Displaying trips with high prediction errors on a map over NY City."></a>
+                        <a href="../images/nyc-taxi-cabs/high_prediction_errors_on_map.png"><img class="full-image" src="../images/nyc-taxi-cabs/high_prediction_errors_on_map.png" alt="Displaying trips with high prediction errors on a map over NY City."></a>
                         <figcaption class="figure-caption">Displaying trips with high prediction errors on a map over NY City.</figcaption>
                     </figure>
                 </div>
