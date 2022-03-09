@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:description" content="What makes a Song Popular on Spotify?">
+    <meta property="og:image" content="https://github.com/JakobLS/public-photos/blob/main/spotify-logo-black.jpeg?raw=true">
+  
+
+    <title>What makes a Song Popular on Spotify?</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" rel="stylesheet" type="text/css"/>
+    <link href="../static/style.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" type="image/png" href="../images/favicon-96x96.png">
+
+    <!-- Google fonts for code syntax highlightning -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200;300&display=swap" rel="stylesheet">
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-QZ3TK8J9QP"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-QZ3TK8J9QP');
+    </script>
+  </head>
+
+  <body>
+    <header class="project-header">
+        <div class="project-header-inner">
+            <p><a href="../">Home</a></p>
+        </div>
+    </header>
+
+    <main>
+        <div class="taxis-outer">
+            <div class="taxis-inner">
+                <h1 class="project_h1">What makes a Song Popular on Spotify?</h1>
+
+                <p>Let's learn more about what makes a song popular. My intuition is that shorter, vocal and more energetic songs are more popular among the general population. These are the kind of songs you hear most frequently when tuning into the radio or checking the top tracks of the month. Is it possible to prove this statistically? Moreover, is your music taste more in line with the general public's, or you've developed a unique taste of your own?</p>
+
+                <figure class="full-image figure-specs">
+                    <a href="../images/song-popularity/Spotify_Logo_CMYK_Green.png"><img class="full-image" src="../images/song-popularity/Spotify_Logo_CMYK_Green.png" alt="What attributes do popular Songs on Spotify have?"></a>
+                    <figcaption class="figure-caption">What attributes do popular Songs on Spotify have?</figcaption>
+                </figure>
+
+                <p>The dataset can be downloaded <a href="https://www.kaggle.com/akiboy96/spotify-dataset" target="_blank" rel="noopener">here</a>, while the feature descriptions are taken from Spotify's developer <a href="https://developer.spotify.com/documentation/web-api/reference/#/operations/get-audio-features" target="_blank" rel="noopener">page</a>. The Jupyter notebook used for performing the analysis can be accessed on GitHub <a href="https://github.com/JakobLS/spotify-song-popularity" target="_blank" rel="noopener">here</a>.</p>
+
+                <h2 class="top-margin-h2">Initial data exploration</h2>
+
+                <p>Load the data, decode the <span class="inline-code">mode</span> and <span class="inline-code">popularity</span> columns for ease of understanding, and delete two columns we're not interested in. Finally, display some statistics to make an initial verification that the data is okay.</p>
+
+                <figure class="full-image figure-specs">
+                  <a href="../images/song-popularity/initial-describe.png"><img class="full-image" src="../images/song-popularity/initial-describe.png" alt="Descriptive statistics."></a>
+                  <figcaption class="figure-caption">Descriptive statistics.</figcaption>
+                </figure>
+
+                <p>All columns seem to have reasonable range. Max duration (<span class="inline-code">duration_ms</span>) is very high at <span class="inline-code">4.17e6</span>, but converted into something more comprehensible it's actually no more than 70 minutes (around 4000 seconds) - well within what's plausible for a song length. Many song attributes are normalised within the range <span class="inline-code">[0, 1]</span> (such as <span class="inline-code">danceability</span>, <span class="inline-code">energy</span> and <span class="inline-code">instrumentalness</span>).</p>
+
+                <p>Display what decades most songs are from, split on popularity and mode.</p>
+
+                <figure class="full-image figure-specs">
+                  <a href="../images/song-popularity/popularity-by-decade.png"><img class="full-image" src="../images/song-popularity/popularity-by-decade.png" alt="Display songs by popularity, decade and mode. There are most songs from the 60s and 70s."></a>
+                  <figcaption class="figure-caption">Display songs by popularity, decade and mode. Most songs in the dataset are from the 60s and 70s.</figcaption>
+                </figure>
+
+                <p>The data consist of most songs from the 60s and 70s. Major mode is more frequent than Minor mode.</p>
+
+                <p>Let's see what attributes are most correlated with popular songs by calculating the correlation between each feature and the popularity. This can then be displayed in something referred to as a correlation matrix.</p>
+
+                <h3 class="top-margin-h3">Correlation Matrix</h3>
+
+                <p>In order to facilitate interpretation of the correlation matrix, I will rearrange the column order so popularity ends up in the first position. Some columns need to be converted to numerical as well. Below is the resulting matrix.</p>
+
+                <figure class="full-image figure-specs">
+                  <a href="../images/song-popularity/correlation-matrix.png"><img class="full-image" src="../images/song-popularity/correlation-matrix.png" alt="Correlation Matrix relative Song Popularity."></a>
+                  <figcaption class="figure-caption">Correlation Matrix relative Song Popularity.</figcaption>
+                </figure>
+
+                <p>The attributes that are most correlated with song popularity, when considering both popular and unpopular songs, are:</p>
+
+                <ul>
+                  <li><span class="inline-code">Instrumentalness</span> (-0.41)</li>
+                  <li><span class="inline-code">Danceability</span> (0.35)</li>
+                  <li><span class="inline-code">Loudness</span> (0.29)</li>
+                  <li><span class="inline-code">Valence</span> (0.25) and <span class="inline-code">Acousticness</span>(-0.25)</li>
+                  <li><span class="inline-code">Energy</span> (0.20)</li>
+                </ul>
+
+                <div class="quote-div-outer">
+                  <div class="quote-div-inner quote-text">
+                      <p>With high certainty and a fairly large difference, <i>Instrumentalness</i> is significantly <u>lower</u> in popular than in unpopular songs, while <i>Danceability</i> and <i>Loudness</i> are significantly <u>higher</u>.</p>
+                  </div>
+                </div>
+
+                <p>Attributes such as <span class="inline-code">decade</span>, <span class="inline-code">duration</span>, <span class="inline-code">tempo</span>, <span class="inline-code">liveness</span> and <span class="inline-code">speechiness</span> have only minor impact.</p>
+
+                <p>We can additionally confirm this using A/B tests. We won't cover all but will instead focus on some few in each group; highly and minor correlated. For the purpose of this article we choose to test <span class="inline-code">instrumentalness</span>, <span class="inline-code">danceability</span> and <span class="inline-code">energy</span> among the highly correlated attributes and <span class="inline-code">duration</span> and <span class="inline-code">speechiness</span> among the feaures with low correlation.</p>
+
+                <p>Since we will conduct the analysis based on popular and unpopular songs, we will split the data into these two groups.</p>
+
+                <figure class="full-image figure-specs">
+                  <a href="../images/song-popularity/data-split.png"><img class="full-image" src="../images/song-popularity/data-split.png" alt="Popular and unpopular songs data split."></a>
+                  <figcaption class="figure-caption">Popular and unpopular songs data split.</figcaption>
+                </figure>
+
+                <p>With around 20.000 songs in each group, the dataset is more than large enough for hypothesis testing.</p>
+
+                <h2 class="top-margin-h2">Instrumentalness</h2>
+
+                <p>Instrumentalness was highly <i>negatively</i> correlated with song popularity. This means that songs that are popular have in general lower instrumentalness. This maks intuitive sense as most songs you hear on the popular radio stations are not instrumental. Let's very this statistically using an A/B test.</p>
+
+                <p>Plot instrumentalness by popylarity using a histogram. Then calculate skewness and kurtosis and test for normality.</p>
+
+                <figure class="full-image figure-specs">
+                  <a href="../images/song-popularity/Instrumentalness-hist.png"><img class="full-image" src="../images/song-popularity/Instrumentalness-hist.png" alt="Instrumentalness by popularity."></a>
+                  <figcaption class="figure-caption">Instrumentalness by popularity.</figcaption>
+                </figure>
+
+                <figure class="full-image figure-specs">
+                  <a href="../images/song-popularity/test-for-normality-instrumentalness.png"><img class="full-image" src="../images/song-popularity/test-for-normality-instrumentalness.png" alt="Skewness, kurtosis and a normality test."></a>
+                  <figcaption class="figure-caption">Skewness, kurtosis and a normality test.</figcaption>
+                </figure>
+
+                <p>Both skewness and kurtosis are above the threshold of ±3 for popular songs which indicates non-normality. A visual inspection confirms this. Although unpopular songs have acceptable values, we choose Kruskal-Wallis test for testing the null hypothesis.</p>
+
+                <h3 class="top-margin-h3">State the null and alternative hypothesis</h3>
+
+                <ul>
+                  <li>The <i>null</i> hypothesis is that there is <i>no</i> significant difference, on average, in Instrumentalness between popular and unpopular songs.</li>
+                  <li>The <i>alternative</i> hypothesis is that there <i>is</i> a significant difference, on average, in Instrumentalness between popular and unpopular songs.</li>
+                </ul>
+
+                <h3 class="top-margin-h3">Test the null hypothesis and visualise the results.</h3>
+
+                <figure class="full-image figure-specs">
+                  <script src="https://gist.github.com/JakobLS/23346d5926aa65ea366dc1c5c7cce09c.js"></script>
+                  <figcaption class="figure-caption">Test the null hypothesis.</figcaption>
+                </figure>
+
+                <p>This results in a t-statistics of 7265.83 and pvalue of 0.0. We can even choose a confidence level of 99% for the confidence interval due to the low p-value. The high t-statistics indicate a large difference between the groups. Let's calculate the confidence interval by wrapping corresponding logic in a function.</p>
+
+                <figure class="full-image figure-specs">
+                  <script src="https://gist.github.com/JakobLS/b34eb1d197c02664e837b87fb133461b.js"></script>
+                  <figcaption class="figure-caption">Calculate the confidence interval.</figcaption>
+                </figure>
+
+                <p>Which results in the following output:</p>
+
+                <figure class="full-image figure-specs">
+                  <a href="../images/song-popularity/ci-instrumentalness.png"><img class="full-image" src="../images/song-popularity/ci-instrumentalness.png" alt="Confidence interval for instrumentalness at the 99% confidence level."></a>
+                  <figcaption class="figure-caption">Confidence interval for instrumentalness at the 99% confidence level.</figcaption>
+                </figure>
+
+                <p><i>We reject the null</i>. There <i>is</i> a significant difference in means between the two groups. With 99% confidence, popular songs have between 0.24 and 0.25 points <i>lower</i> instrumentalness than unpopular songs.</p>
+
+                <p>It can be difficult to imagine this difference in means by just looking at the numbers. Below plot makes this slightly clearer.</p>
+
+                <div class="images-div">
+                  <figure class="full-image figure-specs">
+                    <a href="../images/song-popularity/instrumentalness-means-plot.png"><img class="full-image" src="../images/song-popularity/instrumentalness-means-plot.png" alt="Difference in means between popular and unpopular songs for Instrumentalness."></a>
+                    <figcaption class="figure-caption">Difference in means between popular and unpopular songs for Instrumentalness.</figcaption>
+                  </figure>
+                </div>
+
+                <p>Visually the difference is clear, with means at around 0.03 and 0.28. Unpopular songs are on average far more instrumental (around 8 times more) than those that are popular.</p>
+
+                <h2 class="top-margin-h2">Danceability</h2>
+
+                <p>Through the correlation matrix earlier, we saw that danceability is positively correlated with song popularity. This means that popular songs tend to be more danceable. This makes sense based on the songs that seem to be most frequently played on mainstream radio stations.</p>
+
+                <p>Similar to before, display danceability by popularity using a histogram.</p>
+
+                <figure class="full-image figure-specs">
+                  <a href="../images/song-popularity/danceability-hist.png"><img class="full-image" src="../images/song-popularity/danceability-hist.png" alt="Danceability distribution displayed in a histogram."></a>
+                  <figcaption class="figure-caption">Danceability distribution displayed on a histogram.</figcaption>
+                </figure>
+
+                <p>Both distributions seem to be close to normally distributed by a visual inspection. Let's calculate some statistics and test for normality using the Shapiro-Wilk test. Although the p-value may not be accurate for samples larger than 5000, the test statistics should be accurate and help us provide some indications on where to head next.</p>
+
+                <figure class="full-image figure-specs">
+                  <a href="../images/song-popularity/normal-test-danceability.png"><img class="full-image" src="../images/song-popularity/normal-test-danceability.png" alt="Normality test results for Danceability."></a>
+                  <figcaption class="figure-caption">Normality test results for Danceability.</figcaption>
+                </figure>
+
+                <p>Both skewness and kurtosis are well below the threshold of ±3 for normality, while the test statistics is very close to 1. Great! We can more forward with an independet t-test.</p>
+
+                <h3 class="top-margin-h3">State the null and alternative hypothesis</h3>
+
+                <ul>
+                  <li>The <i>null</i> hypothesis is that there is <i>no</i> significant difference, on average, in Danceability between popular and unpopular songs.</li>
+                  <li>The <i>alternative</i> hypothesis is that there <i>is</i> a significant difference, on average, in Danceability between popular and unpopular songs.</li>
+                </ul>
+
+                <h3 class="top-margin-h3">Test the null hypothesis and visualise the results.</h3>
+
+                <p>We get a t-statistics of 74.76 and a p-value of 0.0. Since the p-value is so low, we can go with a 99% confidence level when calculating the confidence interval.</p>
+
+                <figure class="full-image figure-specs">
+                  <a href="../images/song-popularity/ci-danceability.png"><img class="full-image" src="../images/song-popularity/ci-danceability.png" alt="Confidence interval for danceability at the 99% confidence level."></a>
+                  <figcaption class="figure-caption">Confidence interval for danceability at the 99% confidence level.</figcaption>
+                </figure>
+
+                <p><i>We reject the null</i>. With 99% confidence, popular songs have on average between 0.12 and 0.13 higher danceability scores than unpopular songs. This is equivalent to a difference of around 25%.</p>
+
+                <div class="images-div">
+                  <figure class="full-image figure-specs">
+                    <a href="../images/song-popularity/danceability-means-plot.png"><img class="full-image" src="../images/song-popularity/danceability-means-plot.png" alt="Difference in means between popular and unpopular songs for Danceability."></a>
+                    <figcaption class="figure-caption">Difference in means between popular and unpopular songs for Danceability.</figcaption>
+                  </figure>
+                </div>
+
+                <p>We can visually see that the average danceability for popular songs is significantly higher (at 0.60) compared with unpopular (0.48) songs. Note the small confidence intervals (vertical lines through the dots which you barely see) - they're a result of the large sample size which allows us to calculate the difference more accurately.</p>
+
+                <h2 class="top-margin-h2">Energy</h2>
+
+                <p>The energy level had a fairly high positive correlation among popular songs. This means that popular songs have in general higher enery level than those that are not. Plotting the distribution for Energy level by popularity on a histogram yields the following plot:</p>
+
+                <figure class="full-image figure-specs">
+                  <a href="../images/song-popularity/energy-hist.png"><img class="full-image" src="../images/song-popularity/energy-hist.png" alt="Energy level distribution displayed on a histogram."></a>
+                  <figcaption class="figure-caption">Energy level distribution displayed on a histogram.</figcaption>
+                </figure>
+
+                <p>Calculating skewness, kurtosis and testing for normality results in the following.</p>
+
+                <figure class="full-image figure-specs">
+                  <a href="../images/song-popularity/test-for-normality-energy.png"><img class="full-image" src="../images/song-popularity/test-for-normality-energy.png" alt="Testing Energy level for normality."></a>
+                  <figcaption class="figure-caption">Testing Energy level for normality.</figcaption>
+                </figure>
+
+                <p>A visual inspection seem to indicate that the most energetic songs are unpopular (energy level at or close to 1). Popular songs are still clustered in the higher end with most energetic songs scoring around 0.5 and 0.8. Energy level among popular songs is fairly normally distributed, while that doesn't seem to be the case for unpopular songs.</p>
+
+                <p>Although skewness and kurtosis indicate that both distributions are normal, the unpopular songs visuals are not convincing. We will thus go with Kruskal-Wallis non-parametric test to be on the safe side. The sample size is with good margin large enough.</p>
+
+                <h3 class="top-margin-h3">State the null and alternative hypothesis</h3>
+
+                <ul>
+                  <li>The <i>null</i> hypothesis is that there is <i>no</i> significant difference, on average, in Energy level between popular and unpopular songs.</li>
+                  <li>The <i>alternative</i> hypothesis is that there <i>is</i> a significant difference, on average, in Energy level between popular and unpopular songs.</li>
+                </ul>
+
+                <h3 class="top-margin-h3">Test the null hypothesis and visualise the results.</h3>
+
+                <p>We get a t-statistics of 904.27 and a very small p-value of 1.16e-198. The confidence interval is displayed as follows:</p>
+
+                <figure class="full-image figure-specs">
+                  <a href="../images/song-popularity/ci-energy.png"><img class="full-image" src="../images/song-popularity/ci-energy.png" alt="Testing Energy level for normality."></a>
+                  <figcaption class="figure-caption">Confidence interval for Energy level at the 99% confidence level.</figcaption>
+                </figure>
+
+                <p><i>We reject the null.</i> With 99% confidence, popular songs have on average between 0.08 and 0.1 higher energy level units than unpopular songs. A difference of around 17%.</p>
+
+                <div class="images-div">
+                  <figure class="full-image figure-specs">
+                    <a href="../images/song-popularity/energy-means-plot.png"><img class="full-image" src="../images/song-popularity/energy-means-plot.png" alt="Difference in means between popular and unpopular songs for Energy level."></a>
+                    <figcaption class="figure-caption">Difference in means between popular and unpopular songs for Energy level.</figcaption>
+                  </figure>
+                </div>
+
+                <p>Above pointplot visually displays how the average energy level for popular songs (0.62) is significantly higher than for unpopular songs (0.53).</p>
+
+                <h2 class="top-margin-h2">Duration</h2>
+
+                <p>Duration had a very low negative correlation with song popularity in our initial analysis.</p>
+
+                <p>Start by plotting the distribution. Out of the around 40k songs in the dataset, only 134 are longer than 1,000 seconds. This results in a very long right tail (the longest song is around 70 minutes, or over 4,000 seconds). By limiting the x-axis to 1,000 seconds, it will be easier to interpret the plot. The t-test will be applied on all songs though.</p>
+
+                <figure class="full-image figure-specs">
+                  <a href="../images/song-popularity/duration-hist.png"><img class="full-image" src="../images/song-popularity/duration-hist.png" alt="Duration distribution displayed using a histogram. The x-axis is limited to 1,000 seconds to facilitate interpretation."></a>
+                  <figcaption class="figure-caption">Duration distribution displayed using a histogram. The x-axis is limited to 1,000 seconds to facilitate interpretation.</figcaption>
+                </figure>
+
+                <figure class="full-image figure-specs">
+                  <a href="../images/song-popularity/test-for-normality-duration.png"><img class="full-image" src="../images/song-popularity/test-for-normality-duration.png" alt="Testing Duration for normality."></a>
+                  <figcaption class="figure-caption">Testing Duration for normality.</figcaption>
+                </figure>
+
+                <p>Skewness, kurtosis and a visual inspection all indicate that neither of the distributions are normal.</p>
+
+                <h3 class="top-margin-h3">State the null and alternative hypothesis</h3>
+
+                <ul>
+                  <li>The <i>null</i> hypothesis is that there is <i>no</i> significant difference, on average, in Duration between popular and unpopular songs.</li>
+                  <li>The <i>alternative</i> hypothesis is that there <i>is</i> a significant difference, on average, in Duration between popular and unpopular songs.</li>
+                </ul>
+
+                <h3 class="top-margin-h3">Test the null hypothesis and visualise the results.</h3>
+
+                <p>We use the Kruskal-Wallis test to test the null and get a t-statistics of 18.98 and p-value of 1.32e-05.</p>
+
+                <figure class="full-image figure-specs">
+                  <a href="../images/song-popularity/ci-duration.png"><img class="full-image" src="../images/song-popularity/ci-duration.png" alt="Confidence interval for Duration at the 99% confidence level."></a>
+                  <figcaption class="figure-caption">Confidence interval for Duration at the 99% confidence level.</figcaption>
+                </figure>
+
+                <p><i>We reject the null</i>. There is a significant difference in duration between popular and unpopular songs. With 99% confidence, popular songs are on average between 15 and 21 seconds <i>shorter</i> than unpopular songs.</p>
+
+                <p>This is not much, but I still find it reasonable that popular songs are at least slightly shorter than unpopular songs, on average. Few songs that are played on mainstream media platforms are very long. Let's visually display this difference below.</p>
+
+                <div class="images-div">
+                  <figure class="full-image figure-specs">
+                    <a href="../images/song-popularity/duration-means-plot.png"><img class="full-image" src="../images/song-popularity/duration-means-plot.png" alt="Difference in Duration means between popular and unpopular songs."></a>
+                    <figcaption class="figure-caption">Difference in Duration means between popular and unpopular songs.</figcaption>
+                  </figure>
+                </div>
+
+                <p>We initially found a weak negative correlation for song duration using a correlation matrix. The A/B test verifies these results by confirming that there is a difference. However, the difference is quite small at around 8%.</p>
+
+                <h2 class="top-margin-h2">Speechiness</h2>
+
+                <p>Lastly, we will run an A/B test on Speechiness. Speechiness had a very weak negative correlation in our initial analysis. As before, plot the distribution to get a general feeling for the data.</p>
+
+                <figure class="full-image figure-specs">
+                  <a href="../images/song-popularity/speechiness-hist.png"><img class="full-image" src="../images/song-popularity/speechiness-hist.png" alt="Speechiness distribution displayed using a histogram."></a>
+                  <figcaption class="figure-caption">Speechiness distribution displayed using a histogram.</figcaption>
+                </figure>
+
+                <figure class="full-image figure-specs">
+                  <a href="../images/song-popularity/normal-test-speechiness.png"><img class="full-image" src="../images/song-popularity/normal-test-speechiness.png" alt="Testing Speechiness for normality."></a>
+                  <figcaption class="figure-caption">Testing Speechiness for normality.</figcaption>
+                </figure>
+
+                <p>There is no clear visual difference between popular and unpopular songs. They all compose of little speech. It seems like speech-rich content such as audio books and podcasts have been excluded from the dataset during data collection.</p>
+
+                <p>None of the distributions seem normal by a visual inspection. Both skewness and kurtosis suggest this as well. We will thus use Kruskal-Wallis to test the null hypothesis.</p>
+
+                <h3 class="top-margin-h3">State the null and alternative hypothesis</h3>
+
+                <ul>
+                  <li>The <i>null</i> hypothesis is that there is <i>no</i> significant difference, on average, in Speechiness between popular and unpopular songs.</li>
+                  <li>The <i>alternative</i> hypothesis is that there <i>is</i> a significant difference, on average, in Speechiness between popular and unpopular songs.</li>
+                </ul>
+
+                <h3 class="top-margin-h3">Test the null hypothesis and visualise the results.</h3>
+
+                <p>We end up with a t-statistics of 697.39 and p-value of 1.10e-153.</p>
+
+                <figure class="full-image figure-specs">
+                  <a href="../images/song-popularity/ci-speechiness.png"><img class="full-image" src="../images/song-popularity/ci-speechiness.png" alt="Confidence interval for Speechiness at the 99% confidence level."></a>
+                  <figcaption class="figure-caption">Confidence interval for Speechiness at the 99% confidence level.</figcaption>
+                </figure>
+
+                <p><i>We reject the null</i>. With 99% confidence, popular songs have on average between 0.005 and 0.009 lower speechiness score compared with unpopular songs. Although significant, the difference is quite small at around 10%.</p>
+
+                  <figure class="full-image figure-specs">
+                    <a href="../images/song-popularity/speechiness-means.png"><img class="full-image" src="../images/song-popularity/speechiness-means.png" alt="Difference in Speechiness means between popular and unpopular songs."></a>
+                    <figcaption class="figure-caption">Difference in Speechiness means between popular and unpopular songs. Note that the y-axis doesn't start at zero on the left which indicates a larger difference that what there really is.</figcaption>
+                  </figure>
+
+                <p>The left plot, which is using the default settings and a truncated y-axis, indicate a very large difference between the two distributions. The right plot, with a y-axis starting at 0, doesn't play tricks on us like that. It's important to be aware of small details like this when plotting the difference between two groups. The statistical test suggested a small difference - and this should be reflected in the visuals as well.</p>
+
+                <h2 class="top-margin-h2">Conclusions</h2>
+
+                <p>We've identified several attributes that differ between popular and unpopular songs. With high certainty and fairly large differences, <i>Instrumentalness</i>, <i>Danceability</i> and <i>Energy</i> level are significantly different between the two groups. The difference in both <i>Duration</i> and <i>Speechiness</i> were statistically significant but fairly small.</p>
+
+                <div class="quote-div-outer">
+                  <div class="quote-div-inner quote-text">
+                      <p>With high certainty and a fairly large difference, <i>Instrumentalness</i> is significantly <u>lower</u> in popular than in unpopular songs, while <i>Danceability</i> and <i>Energy</i> are significantly <u>higher</u>.</p>
+                  </div>
+                </div>
+
+                <p>There are several caveats regarding the dataset. We don't know under what assumptions it was collected or whether it's representative for songs in general. It contains roughly as many popular as unpopular songs (20k) while it's fair to assume that there are more unpopular than popular songs on the market. We don't know exactly what defines a song as popular. Perhaps the definition is too loose or too restricted.</p>
+
+                <p>Nevertheless, if you feel that most of the songs you're listening to are more <i>danceable</i> than not, have high <i>energy</i> levels and are most often not <i>instrumental</i> - then there's a chance your music would be popular among many others. On the other hand, if you don't recognise yourself listening to this kind of music, you might have a more unique taste. 🙂</p>
+
+
+
+
+
+
+
+                <div class="bottom-space">
+                </div>
+            </div>
+        </div>
+
+    </main>
+    <footer class="footer">
+      <div>
+      </div>
+    </footer>
+  </body>
+</html>
+
+
+
+
+
+
