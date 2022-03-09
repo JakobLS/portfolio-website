@@ -356,7 +356,9 @@ a:active  {color: #A9A9A9;}
   margin-bottom: 30%;
 }
 
-
+.rounded-corners {
+  border-radius: 10px;
+}
 
 
 
