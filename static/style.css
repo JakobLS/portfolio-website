@@ -361,6 +361,51 @@ a:active  {color: #A9A9A9;}
 }
 
 
+/* Table CSS */
+.tg {
+  border-collapse:collapse;
+  border-spacing:0;
+}
+
+.tg td {
+  border-color:black;
+  border-style:solid;
+  border-width:2px;
+  font-family:Arial, sans-serif;
+  font-size:14px;
+  overflow:hidden;
+  padding:10px 5px;
+  word-break:normal;
+}
+
+.tg th {
+  border-color:black;
+  border-style:solid;
+  border-width:2px;
+  font-family:Arial, sans-serif;
+  font-size:14px;
+  font-weight:normal;
+  overflow:hidden;
+  padding:10px 5px;
+  word-break:normal;
+}
+
+.no-border th:nth-child(1){
+  border-width: 0px;
+}
+
+.tg .tg-cly1 {
+  text-align:left;
+  vertical-align:middle
+}
+
+.tg .tg-yla0 {
+  font-weight:bold;
+  text-align:left;
+  vertical-align:middle
+}
+/* End Table CSS */
+
 
 
 

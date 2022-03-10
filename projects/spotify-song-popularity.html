@@ -69,15 +69,15 @@
 
                 <p>The data consist of most songs from the 60s and 70s. Major mode is more frequent than Minor mode.</p>
 
-                <p>Let's see what attributes are most correlated with popular songs by calculating the correlation between each feature and the popularity. This can then be displayed in something referred to as a correlation matrix.</p>
+                <p>Let's see what attributes are most correlated with popular songs by calculating the <a href="https://en.wikipedia.org/wiki/Pearson_correlation_coefficient" target="_blank" rel="noopener">Pearson correlation coefficient</a> between each feature and the popularity. This can then be displayed in something referred to as a correlation matrix.</p>
 
-                <h3 class="top-margin-h3">Correlation Matrix</h3>
+                <h3 class="top-margin-h3">Pearson Correlation Matrix</h3>
 
                 <p>In order to facilitate interpretation of the correlation matrix, I will rearrange the column order so popularity ends up in the first position. Some columns need to be converted to numerical as well. Below is the resulting matrix.</p>
 
                 <figure class="full-image figure-specs">
-                  <a href="../images/song-popularity/correlation-matrix.png"><img class="full-image" src="../images/song-popularity/correlation-matrix.png" alt="Correlation Matrix relative Song Popularity."></a>
-                  <figcaption class="figure-caption">Correlation Matrix relative Song Popularity.</figcaption>
+                  <a href="../images/song-popularity/correlation-matrix.png"><img class="full-image" src="../images/song-popularity/correlation-matrix.png" alt="Pearson Correlation Matrix relative Song Popularity."></a>
+                  <figcaption class="figure-caption">Pearson Correlation Matrix relative Song Popularity.</figcaption>
                 </figure>
 
                 <p>The attributes that are most correlated with song popularity, when considering both popular and unpopular songs, are:</p>
@@ -356,9 +356,9 @@
                   </div>
                 </div>
 
-                <p>There are several caveats regarding the dataset. We don't know under what assumptions it was collected or whether it's representative for songs in general. It contains roughly as many popular as unpopular songs (20k) while it's fair to assume that there are more unpopular than popular songs on the market. We don't know exactly what defines a song as popular. Perhaps the definition is too loose or too restricted.</p>
+                <p>There are several caveats regarding the dataset. We don't know under what assumptions it was collected or whether it's representative for songs in general. It contains roughly as many popular as unpopular songs (20k) while it's fair to assume that there are more unpopular than popular songs on the market. We don't know exactly what defines a song as popular. Perhaps the definition is too loose or too restricted. The dataset contain only songs on Spotify, and although Spotify is a leader on the market, it may not represent popular songs on other platforms and in society in general.</p>
 
-                <p>Nevertheless, if you feel that most of the songs you're listening to are more <i>danceable</i> than not, have high <i>energy</i> levels and are most often not <i>instrumental</i> - then there's a chance your music would be popular among many others. On the other hand, if you don't recognise yourself listening to this kind of music, you might have a more unique taste. 🙂</p>
+                <p>Nevertheless, based on the data we've used, if you feel that most of the songs you're listening to are more <i>danceable</i> than not, have high <i>energy</i> levels and are most often not <i>instrumental</i> - then there's a chance your music would be popular among many others. On the other hand, if you don't recognise yourself listening to this kind of music, you might have a more unique taste. 🙂</p>
 
 
 

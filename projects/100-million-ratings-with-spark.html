@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:description" content="Training a Model on 100 Million Ratings with Spark on a Mac M1">
+    <meta property="og:image" content="https://github.com/JakobLS/public-photos/blob/main/spotify-logo-black.jpeg?raw=true">
+  
+    <title>Training a Model on 100 Million Ratings with Spark on a Mac M1</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" rel="stylesheet" type="text/css"/>
+    <link href="../static/style.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" type="image/png" href="../images/favicon-96x96.png">
+
+    <!-- Google fonts for code syntax highlightning -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200;300&display=swap" rel="stylesheet">
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-QZ3TK8J9QP"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-QZ3TK8J9QP');
+    </script>
+  </head>
+
+  <body>
+    <header class="project-header">
+        <div class="project-header-inner">
+            <p><a href="../">Home</a></p>
+        </div>
+    </header>
+
+    <main>
+        <div class="taxis-outer">
+            <div class="taxis-inner">
+                <h1 class="project_h1">Training a Model on 100 Million Ratings with Spark on a Mac M1</h1>
+
+                <p>Is it possible to train a model on 100 million rows using nothing more than a common laptop?</p>
+
+                <p>I've been refreshing Spark lately and wanted to give it a try on a dataset I wouldn't be able to deal with using non-big data tools such as Pandas and Numpy. I came across the dataset and the Netflix challenge it originates from some time ago, but have never really had any reason to work on it. Until now. The complete notebook can be found on GitHub <a href="https://github.com/JakobLS/100-million-rows-with-spark/blob/main/100-Million-Ratings-with-Spark-on-a-Mac-M1.ipynb" target="_blank" rel="noopener">here</a>.</p>
+
+                <figure class="full-image figure-specs">
+                    <a href="../images/100m-ratings/outdoor-exercise.jpeg"><img class="full-image rounded-corners" src="../images/100m-ratings/outdoor-exercise.jpeg" alt="Training a machine learning model on 100 million rows goes surprisingly fast even when done on a common laptop."></a>
+                    <figcaption class="figure-caption">Training a machine learning model on 100 million rows goes surprisingly fast - even when done on a common laptop.</figcaption>
+                </figure>
+
+                <p>The dataset is open source and available on Kaggle through <a href="https://www.kaggle.com/netflix-inc/netflix-prize-data" target="_blank" rel="noopener">this</a> link.</p>
+
+                <h3 class="top-margin-h3">Prepare, Merge and Convert the Data to Parquet Format</h3>
+
+                <p>The data comes ill-suited for analysis and needs to be prepared in a couple of steps before we can proceed. The following code snippet loads the original <span class="inline-code">.txt</span> files, extracts the <span class="inline-code">movieID</span>, which is stored in a way that makes further analysis difficult, adds a column for corresponding before storing each file in <span class="inline-code">.csv</span> format. The script may take some time as we are processing over 100 million rows.</p>
+
+                <figure class="full-image figure-specs">
+                  <script src="https://gist.github.com/JakobLS/8f5a6913dc3c27df89754d262f96bda7.js"></script>
+                  <figcaption class="figure-caption">Initial data preparation to extract <span class="inline-code">movieID</span> and create a unique column to store it in.</figcaption>
+                </figure>
+
+                <p>Next, we will add the release year for each movie as the <span class="inline-code">YearOfRelease</span> column to the data by joining it with the <span class="inline-code">movie_titles.csv</span> file. Lastly, we convert the resulting CSV files to Parquet format for compuational benefits later on.</p>
+
+                <p>To make sure each column is of expected data type, we create a schema for each. The schema is then used when loading the data as shown below.</p>
+
+                <figure class="full-image figure-specs">
+                  <script src="https://gist.github.com/JakobLS/4383f58204659fda69c581e3e4eed6b6.js"></script>
+                  <figcaption class="figure-caption">Specify schema and load both datasets.</figcaption>
+                </figure>
+
+                <p>Let's now join the two DataFrames keeping only the columns we are interested in - which are all columns in the <span class="inline-code">ratings</span> DataFrame, but only <span class="inline-code">YearOfRelease</span> in <span class="inline-code">movie_titles</span>. We join them on the common column <span class="inline-code">MovieID</span>. In order to select only the columns we're interested in, we create an alias for each of the DataFrames. While we're on to it, we can also shuffle the data so the ordering (e.g. most recent movies at the top) doesn't affect the analysis. The code for that looks as follows.</p>
+
+                <figure class="full-image figure-specs">
+                  <script src="https://gist.github.com/JakobLS/f2b058d16cad62731a889c0c739a7998.js"></script>
+                  <figcaption class="figure-caption">Join the datasets on the common column <span class="inline-code">MovieID</span> before shuffling it randomly.</figcaption>
+                </figure>
+
+                <p>This is how the resulting data looks like:</p>
+
+                <div class="images-div">
+                  <figure class="full-image figure-specs">
+                    <a href="../images/100m-ratings/joined-data.png"><img class="full-image rounded-corners" src="../images/100m-ratings/joined-data.png" alt="The resulting data we will use for our analysis."></a>
+                    <figcaption class="figure-caption">The resulting data to be used for analysis. Displaying only top 5 rows.</figcaption>
+                  </figure>
+                </div>
+
+                <p>Lastly, we convert and store the data locally in Parquet format. This results in a significantly more efficient data processing while also taking up less space on the disk. The disadvantage is that it's hard for the human eye to interpret and understand these files as they are stored in binary format. The CSV files we've been working with up to now can easily be opened up and inspected with common tools such as Excel.</p>
+
+                <h2 class="top-margin-h2">Initial Exploratory Data Analysis</h2>
+
+                <p>Now when the data has gone through some initial preparation and convertion we can take a closer look at it. Start by initiating a SparkContext and SparkSession. To deal with potential memory issues during later model training on the full dataset, the following settings in the <span class="inline-code">spark-default.conf</span> file will help prevent those.</p>
+
+                <figure class="full-image figure-specs">
+                  <script src="https://gist.github.com/JakobLS/966477938c83be797eeadb7cc6b70765.js"></script>
+                  <figcaption class="figure-caption">Settings for the <span class="inline-code">spark-default.conf</span> file to prevent memory issues during model training later on.</figcaption>
+                </figure>
+
+                <p>Once the data is loaded, we can display som descriptive statistics to get a better general understanding of it.</p>
+
+                <figure class="full-image figure-specs">
+                  <a href="../images/100m-ratings/descriptive-statistics.png"><img class="full-image rounded-corners" src="../images/100m-ratings/descriptive-statistics.png" alt="Descriptive statistics."></a>
+                  <figcaption class="figure-caption">Descriptive statistics.</figcaption>
+                </figure>
+
+                <p>We can verify that there are around 100 million ratings (100,480,507 to be precise). Additionally, we make the following observations:</p>
+
+                <ul>
+                  <li>There are 17,770 unique movies.</li>
+                  <li>There are 480,189 unique customers (or users). Note that this is not depicted in the summary above - see the notebook for details.</li>
+                  <li>Movie ratings are provided in a scale between 1 and 5. The average movie rating among all movies is quite positive at 3.6.</li>
+                  <li>The oldest movie in the dataset was released in 1896, while the most recent is from 2005.</li>
+                  <li>There are 965 missing values in the <span class="inline-code">YearOfRelease</span> column.</li>
+                </ul>
+
+                <p>While we will do a more thorough visulisation of the dataset efter engineering more features (to keep everything in one place and to facilitate for the purpose of this writing), we can already now remove missing values. We can then confirm that no missing values are present by selecting only rows with missing values. If the output is empty, we're good to go.</p>
+
+                <figure class="full-image figure-specs">
+                  <script src="https://gist.github.com/JakobLS/d5c32fc7f2aab4aae192562254d9b1e4.js"></script>
+                  <figcaption class="figure-caption">Drop missing values and confirm that there are no left.</figcaption>
+                </figure>
+
+                <p>The result of above yields the following.</p>
+
+                <figure class="full-image figure-specs">
+                  <a href="../images/100m-ratings/no-nulls.png"><img class="full-image rounded-corners" src="../images/100m-ratings/no-nulls.png" alt="No missing values left in the data."></a>
+                  <figcaption class="figure-caption">No missing values left in the data.</figcaption>
+                </figure>
+
+                <p>Confirmed - there are no NULL values left. We can move on to creating some new feaures.</p>
+
+                <h2 class="top-margin-h2">Feature Engineering</h2>
+
+                <p>We will do some simple feature engineering by extracting year and month from the <span class="inline-code">RatingDate</span> column as well as calculating the difference in years between that column and the <span class="inline-code">YearOfRelease</span> column. Perhaps knowing when the rating was given and its relation to the release date might better help us determine what rating was given by a specific user. We should also make sure to convert the columns to adequate data types using the <span class="inline-code">.cast()</span> method.</p>
+
+                <p>Engineering the difference, <span class="inline-code">Diff_RatingRelease</span>, is the trickiest and needs some extra workarounds. What we do is that we calculate the difference in years between the release and rating year before dividing by 365.25 to convert it into days.</p>
+
+                <figure class="full-image figure-specs">
+                  <script src="https://gist.github.com/JakobLS/df1f687ec5fcb371381b4211e52eec1e.js"></script>
+                  <figcaption class="figure-caption">Feature engineering three new columns.</figcaption>
+                </figure>
+
+                <p>Additionally, we can bin the <span class="inline-code">Diff_RatingRelease</span> column into <span class="inline-code">Diff_binned</span> to have fewer categories to deal with. This can speed up model training as well. We could experiment by binning in several different ways before training and evaluating a model to find the most suitable bins for the problem. For the purpose of this notebook, we will take a shortcut and bin in the following way:</p>
+
+                <table class="tg">
+                <thead>
+                  <tr>
+                    <th class="tg-yla0">Values</th>
+                    <th class="tg-yla0">Bin</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="tg-cly1">Negative</td>
+                    <td class="tg-cly1">-1</td>
+                  </tr>
+                  <tr>
+                    <td class="tg-cly1">0 - 4.99</td>
+                    <td class="tg-cly1">0, 1, 2, 3, 4 and 5, respectively</td>
+                  </tr>
+                  <tr>
+                    <td class="tg-cly1">5 - 9.99</td>
+                    <td class="tg-cly1">5</td>
+                  </tr>
+                  <tr>
+                    <td class="tg-cly1">10 - 49.99</td>
+                    <td class="tg-cly1">10</td>
+                  </tr>
+                  <tr>
+                    <td class="tg-cly1">50 and above</td>
+                    <td class="tg-cly1">50</td>
+                  </tr>
+                </tbody>
+                </table>
+
+                <p>The logic for that is coded in the <span class="inline-code">bin_diff()</span> function below.</p>
+
+                <figure class="full-image figure-specs">
+                  <script src="https://gist.github.com/JakobLS/ae1023df7f4004c32cf8bcdd3ce4a9ce.js"></script>
+                  <figcaption class="figure-caption">Function for binning a column.</figcaption>
+                </figure>
+
+                <p>Moreover, we have some categorical variables that should be treated before moving forward. These are the nominal variables <span class="inline-code">MovieID</span> and <span class="inline-code">CustomerID</span>. Under current rank order representation, the model may learn that, for example, the customer with <span class="inline-code">CustomerID</span> <i>1488844</i> is larger/bigger/worth more than the customer with <span class="inline-code">CustomerID</span> <i>822109</i> (simply because its <span class="inline-code">CustomerID</span> is higher). Such bias is misleading and we need to address that. There are several options we can take, such as one-hot encoding and bin-counting, but we will go with hashing as it's more straight forward and offers significant computational advantages when we have 480k unique customers. Spark's <span class="inline-code">FeatureHasher</span> is well suited for this.</p>
+
+                <p>We leave the ordinal variables <span class="inline-code">YearOfRelease</span>, <span class="inline-code">RatingYear</span> and <span class="inline-code">RatingsMonth</span> as they are since they are sensitive to rank order (i.e. it makes sense to say that release year 2000 is more recent, or higher, than 1995).</p>
+
+                <figure class="full-image figure-specs">
+                  <script src="https://gist.github.com/JakobLS/46a279f6012f791bab37575231a1ea67.js"></script>
+                  <figcaption class="figure-caption">Feature hashing on columns <span class="inline-code">MovieID</span> and <span class="inline-code">CustomerID</span>.</figcaption>
+                </figure>
+
+                <p>After applying above steps, we end up with the following data:</p>
+
+                <figure class="full-image figure-specs">
+                  <a href="../images/100m-ratings/feature-engineered-data.png"><img class="full-image rounded-corners" src="../images/100m-ratings/feature-engineered-data.png" alt="Data with engineered features."></a>
+                  <figcaption class="figure-caption">Data with engineered features (top 5 rows).</figcaption>
+                </figure>
+
+                <p>Let's keep the target variable <span class="inline-code">Rating</span> as a float. This allows us to approach it as a regression rather than as a classification problem, with the advantage of providing us with the size of the error on each prediction. With a classification approach, predicting a rating of 4 on a movie, which actually got a 3, is equally bad as predicting it as receiving a 1. That doesn't seem reasonable, and a regression approach would be able to better deal with this.</p>
+
+                <h2 class="top-margin-h2">Data Visualisation</h2>
+
+                <p>Next, let's plot the count for each categorical column to get an estimate of their distribution per category. The <span class="inline-code">MovieID</span> and <span class="inline-code">CustomerID</span> columns are truncated due to their large numbers and only display the lowest five (which each has <span class="inline-code">count=1</span>) and highest 100 counts. We also sort these columns on their counts to facilitate interpretation. The hashed columns are excluded from the visualisation as they are hard to interpret for the human eye anyway.</p>
+
+                <figure class="full-image figure-specs">
+                  <a href="../images/100m-ratings/count-plots.png"><img class="full-image rounded-corners" src="../images/100m-ratings/count-plots.png" alt="Data with engineered features."></a>
+                  <figcaption class="figure-caption">Count plot of each category in each categorical column.</figcaption>
+                </figure>
+
+                <p>Among other things, we learn the following from above plot:</p>
+
+                <ul>
+                  <li><span class="inline-code">MovieID</span> and <span class="inline-code">CustomerID</span> counts are highly skewed with some movies receiving many reviews and some customers giving many reviews.</li>
+                  <li>Most movies are released recently.</li>
+                  <li>Most movies have received a 3 or 4 in rating, but there are also many 5s. 1s are the rarest.</li>
+                  <li>Most movies were rated in 2004 and 2005, with over 50% of the ratings in 2005. Given that most movies are released more recently, this makes sense.</li>
+                  <li>The summer months in general, but more specifically, August, September and October are the most popular months to rate a movie. Colder months, and February in particular, have the least. I wonder why. Can it perhaps be because more movies are released during these months, or is it because people have more time off. Or something else. The dataset doesn't include release date by month so we can't know for sure.</li>
+                  <li>Few movies are rated close to their release date (<span class="inline-code">Diff_binned</span> = 0). A lot of movies are rated the year after their release or within five years thereafter. Many movies are also rated over ten years after their release, which makes sense when we know that Netflix was first launched in 1997 - decades after many movies. <i>The interpretation of this last plot depends of course a lot on how we binned the column before. And as previously stated, binning is something that should be experimented with for best result.</i></li>
+                </ul>
+
+                <h2 class="top-margin-h2">Machine Learning modelling</h2>
+
+                <p>With a smaller dataset we would prefer to train and test many models using cross-validation. However, with over 100 million ratings, we can consider the data to be more than large enough for a more traditional train / test split. 80% of the data will be dedicated for training the model while 20% for testing it. Providing a <span class="inline-code">seed</span> will allow us to replicate the results.</p>
+
+                <figure class="full-image figure-specs">
+                  <script src="https://gist.github.com/JakobLS/7d96275b16a82dcf660b61276bb6100b.js"></script>
+                  <figcaption class="figure-caption">80:20 train-test split.</figcaption>
+                </figure>
+
+                <p>We can now specify target variable and features for modelling. Root Mean Squared Error (RMSE) will be used for evaluating the performance of the model. It also has the inherit advantage of being easy to interpret.</p>
+
+                <figure class="full-image figure-specs">
+                  <script src="https://gist.github.com/JakobLS/7fd673bc76027eba6e9a369d598f2d6a.js"></script>
+                  <figcaption class="figure-caption">Specify features, target variable and evaluation metric.</figcaption>
+                </figure>
+
+                <h3 class="top-margin-h3">Get baseline results with Linear Regression</h3>
+
+                <p>To have a baseline to compare further models with, we will train and evaluate one of the more simplistic algorithms on the data; Linear Regression using its default parameters.</p>
+
+                <p>Note that we do this on a smaller fraction of the data to speed things up (file <span class="inline-code">part-00000*.parquet</span> in our case, which contain around 2.5 million reviews).</p>
+
+                <figure class="full-image figure-specs">
+                  <script src="https://gist.github.com/JakobLS/6a818e8f2ccecd01e0f862389bc0792d.js"></script>
+                  <figcaption class="figure-caption">Train a Linear Regression model on a small fraction of the data.</figcaption>
+                </figure>
+
+                <p>Training takes less than 30s and results in a RMSE of 1.1516 on the train set and 1.1525 on the test set. The way to interpret this is that on average, the model is wrong by 1.15 rating points for each prediction it makes. There's practically no difference between the train and test sets, which means variance is low.</p>
+
+                <div class="quote-div-outer">
+                  <div class="quote-div-inner quote-text">
+                      <p>Baseline RMSE: 1.1525</p>
+                  </div>
+                </div>
+
+                <p><b>Note:</b><i> After evaluating a model using the original <span class="inline-code">CustomerID</span> and <span class="inline-code">MovieID</span> features instead of the hashed alternatives, <span class="inline-code">HashedCustomerID</span> and <span class="inline-code">HashedMovieID</span>, I found practically no differences between the two. I will thus continue with the original features only.</i></p>
+
+                <h3 class="top-margin-h3">Tune and Evaluate Multiple Regressors</h3>
+
+                <p>In order to find the best model for the problem, we will experiment with several standard algorithms: Train, tune, evaluate and test Decision Trees, Random Forests, Gradient-Boosted Trees and Linear Regressors on the dataset. Each algorithms has different hyperparameters to tune which we specify in a list of dictionaries. For example, for Random Forest, we will evaluate 20, 40 and 60 number of trees (<span class="inline-code">numTrees</span>) and a max depth (<span class="inline-code">maxDepth</span>) of each tree of 3 and 5. This results in six models only for Random Forest (<span class="inline-code">2x3=6</span>). We won't dig into the details of what these hyperparameters exactly do other than mention that they can affect the final model performance quite a lot.</p>
+
+                <p>Lastly, we will split the training data into 75% for training and 25% for validation, keeping a slightly larger chunk for validation as the dataset is now being split up quite some times. We make sure to use all the laptop's cores (8) to speed things up. The code for these steps are shown below.</p>
+
+                <figure class="full-image figure-specs">
+                  <script src="https://gist.github.com/JakobLS/e351b11038ee18003a49a2bb83d6ee8c.js"></script>
+                  <figcaption class="figure-caption">Train, tune, evaluate and test multiple models on the dataset.</figcaption>
+                </figure>
+
+                <p>The above process terminates in around 11 minutes and yields the following results:</p>
+
+                <table class="tg">
+                <thead>
+                  <tr class="no-border">
+                    <th></th>
+                    <th class="tg-yla0"><span>RMSE train</span></th>
+                    <th class="tg-yla0"><span>RMSE test</span></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="tg-yla0">DecisionTreeRegressor</td>
+                    <td><span>1.14973</span></td>
+                    <td><span>1.15098</span></td>
+                  </tr>
+                  <tr>
+                    <td class="tg-yla0">RandomForestRegressor</td>
+                    <td><span>1.15065</span></td>
+                    <td><span>1.15171</span></td>
+                  </tr>
+                  <tr>
+                    <td class="tg-yla0">GBTRegressor</td>
+                    <td><span>1.14881</span></td>
+                    <td><span>1.15005</span></td>
+                  </tr>
+                  <tr>
+                    <td class="tg-yla0">LinearRegression</td>
+                    <td><span>1.15156</span></td>
+                    <td><span>1.15247</span></td>
+                  </tr>
+                </tbody>
+                </table>
+
+                <p>Although with a very small margin, the Gradient-Boosted Tree Regressor (GBTRegressor) is the most performant model on the test data. Let's extract the best parameters and train it on the entire dataset.</p>
+
+                <h3 class="top-margin-h3">Train the Best GBTRegressor on the Full Dataset</h3>
+
+                <p>Using the best hyperparameters from above, we can now train and test the model on all the available data.</p>
+
+                <figure class="full-image figure-specs">
+                  <script src="https://gist.github.com/JakobLS/3b8c961d37766ad1fac65e7615fd4016.js"></script>
+                  <figcaption class="figure-caption">Train the best GBTRegressor model on the full dataset.</figcaption>
+                </figure>
+
+                <p>After 1h and 25min the training terminates and we have a final score of 1.149 - on both the train and test set. It's barely better than the 1.152 baseline though, and significantly worse than the 0.8572 the team who won the challenge in 2009 got.</p>
+
+                <p>Let's further explore which of the features impact the model the most in making predictions.</p>
+
+                <h3 class="top-margin-h3">Which Features are most Important?</h3>
+
+                <p>Tree based models return something referred to as feature importance, which can be used to better understand how the predictions are made. As displayed below, the most important features are <span class="inline-code">YearOfRelease</span>, <span class="inline-code">MovieID</span> and <span class="inline-code">RatingMonth</span>, contributing 37%, 27% and 20%, respectively. It makes sense that the movie itself (<span class="inline-code">MovieID</span>) highly impacts the model's decision. However, it's more surprising that both release year and rating month play such large roles. The difference between the release and rating year, <span class="inline-code">Diff_binned</span> contributes a meek 3% to the overall, while <span class="inline-code">CustomerID</span> contributes less than 1 percent. So much for our feature engineering efforts.</p>
+
+                <figure class="full-image figure-specs">
+                  <a href="../images/100m-ratings/feature-importance.png"><img class="full-image rounded-corners" src="../images/100m-ratings/feature-importance.png" alt="Feature importance for the GBTRegressor."></a>
+                  <figcaption class="figure-caption">Feature importance for the GBTRegressor.</figcaption>
+                </figure>
+
+                <h2 class="top-margin-h2">Conclusions</h2>
+
+                <p>We've trained a few models on the 100 million ratings dataset from the Netflix challenge back in 2009 using nothing but a laptop. Although the model performance isn't as good as what was attained by the winning teams (they <a href="https://netflixtechblog.com/netflix-recommendations-beyond-the-5-stars-part-1-55838468f429" target="_blank" rel="noopener">reportedly</a> spent 2,000 hours during the first year of the competition), we've been successful in training a fairly large dataset locally. This in less time than what it takes to return from an outdoor exercise session. Pretty cool for just a laptop!</p>
+
+                <p>A final score of 1.149 RMSE (interpreted as 1.149 rating points off on each prediction, on average) was achieved while identifying <span class="inline-code">YearOfRelease</span>, <span class="inline-code">MovieID</span> and <span class="inline-code">RatingMonth</span> to be the most important features when predicting a movie's rating. This is not to say that other features wouldn't be important in making this prediction, but rather that out of the features we used, these are the most important.</p>
+
+                <p>We only briefly covered feature engineering - the process of creating new features out of current or external data - but this is often an incredibly important aspect in machine learning with significant predictive benefits. Examples of engineered features can be the average rating per movie or year, or count/average of ratings per day and movie, number of days since a customer's first rating, and many more.</p>
+
+                <p>Lastly, I should mention that although it was <i>possible</i> to train a model on a laptop we would benefit <u>greatly</u> by using a cloud service such as GCP or AWS. The cost of running an analysis of this size is so low these days that it's often a no-brainer to use them. Also, thanks to Jared Pollack from our discussion about it some time ago which inspired me to take a look at the dataset</p>
+
+                <div class="bottom-space">
+                </div>
+            </div>
+        </div>
+
+    </main>
+    <footer class="footer">
+      <div>
+      </div>
+    </footer>
+  </body>
+</html>
+
+
+
+
+
+
