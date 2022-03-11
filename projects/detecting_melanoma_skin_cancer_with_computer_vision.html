@@ -42,8 +42,6 @@
 
                 <p>There were around 300,000 confirmed new cases of <i>melanoma</i> (malignant) skin cancer worldwide in 2018. During the same year, more than a million new <i>non-melanoma</i> (benign) cases were diagnosed. The numbers are most likely an underestimate due to various factors though (such as countries' lack of registries or wars).</p>
 
-                <p>The Scandinavian counties are all ranked very high in terms of cancer rates per capita, where Sweden, my home country, is ranked 6th, averaged over all sexes. A combination of white skin color and a society that considers being sun-tanned attractive likely contributes to these high numbers in Sweden. Being able to quickly and accurately check a spot on the skin can thus be desirable for many. By using deep learning techniques and a publicly available dataset, <b>I will test whether it's possible to classify melanoma from non-melanoma skin cancer using computer vision</b>.</p>
-
                 <div class="images-div">
                     <figure class="full-image figure-specs">
                         <a href="../images/skin-cancer/cancer-collage.jpg"><img class="full-image rounded-corners" src="../images/skin-cancer/cancer-collage.jpg" alt="Melanoma skin cancer or not?"></a>
@@ -51,9 +49,11 @@
                     </figure>
                 </div>
 
-                <p>The dataset can be accessed on Kaggle through <a href="https://www.kaggle.com/fanconic/skin-cancer-malignant-vs-benign">this link</a>. There are in total 3,297 images, split into 2,110 train, 527 validation and 660 test images. It's a fairly small dataset, chosen specifically to save on computational costs. However, I will choose an implementation where the number of images can easily be scaled up to any number with practically no changes to the code.</p>
+                <p>The Scandinavian counties are all ranked very high in terms of cancer rates per capita, where Sweden, my home country, is ranked 6th, averaged over all sexes. A combination of white skin color and a society that considers being sun-tanned attractive likely contributes to these high numbers in Sweden. Being able to quickly and accurately check a spot on the skin can thus be desirable for many. By using deep learning techniques and a publicly available dataset, <b>I will test whether it's possible to classify melanoma from non-melanoma skin cancer using computer vision</b>.</p>
 
-                <p>The work will be documented in a Jupyter Notebook which can be hosted on a local machine or in the cloud. It's highly recommended to use a GPU as it will significantly speed up model training - perhaps by as as much as 10x. The dataset is small enough to be used with Google Colab (which has access to free GPUs that cover our requirements). The complete notebook can be accessed <a href="Skin_cancer_detection.html">here</a>.</p>
+                <p>The dataset can be accessed on Kaggle through <a href="https://www.kaggle.com/fanconic/skin-cancer-malignant-vs-benign" target="_blank" rel="noopener">this link</a>. There are in total 3,297 images, split into 2,110 train, 527 validation and 660 test images. It's a fairly small dataset, chosen specifically to save on computational costs. However, I will choose an implementation where the number of images can easily be scaled up to any number with practically no changes to the code.</p>
+
+                <p>The work will be documented in a Jupyter Notebook which can be hosted on a local machine or in the cloud. It's highly recommended to use a GPU as it will significantly speed up model training - perhaps by as as much as 10x. The dataset is small enough to be used with Google Colab (which has access to free GPUs that cover our requirements). The complete notebook can be accessed <a href="https://github.com/JakobLS/melanoma-skin-cancer" target="_blank" rel="noopener">here</a>.</p>
 
                 <h2 class="top-margin-h2">Data processing and exploration</h2>
 
@@ -131,7 +131,7 @@
 
                 <h2 class="top-margin-h2">Baseline model</h2>
 
-                <p>Neural networks are hard to train, with many knobs to tune in order to get the results you wish. For that reason, it's very easy to mess things up by introducing errors. A common approach, and one we will take here, is to start out with a simple model with few layers. This also has the inherit advantage of allowing us to find the most simplistic model for the problem that performs sufficiently well. We will try to adhere to the <a href="https://en.wikipedia.org/wiki/KISS_principle">KISS principle</a>.</p>
+                <p>Neural networks are hard to train, with many knobs to tune in order to get the results you wish. For that reason, it's very easy to mess things up by introducing errors. A common approach, and one we will take here, is to start out with a simple model with few layers. This also has the inherit advantage of allowing us to find the most simplistic model for the problem that performs sufficiently well. We will try to adhere to the <a href="https://en.wikipedia.org/wiki/KISS_principle" target="_blank" rel="noopener">KISS principle</a>.</p>
 
                 <p><span class="inline-code">SeparableConv2D</span> layers will be used instead of the more common <span class="inline-code">Conv2D</span> layer since they are faster to train, require less memory, while often yielding superior results. <span class="inline-code">MaxPooling2D</span> layers are used to downsample the feature map after each convolutional layer and is chosen over other pooling alternatives due to their proven superior performance.</p>
 
@@ -174,7 +174,7 @@
                     <figcaption class="figure-caption">Code for initiating training for the baseline model.</figcaption>
                 </figure>
 
-                <p>Training will vary depending on the hardware we use. But by using a free K80 GPU on Google Colab it will take around 5 minutes.</p>
+                <p>Training will vary depending on the hardware we use, but by using a free K80 GPU on Google Colab it will take around 5 minutes.</p>
 
                 <h3 class="top-margin-h3">Check training history</h3>
 
@@ -187,7 +187,7 @@
 
                 <p>The first thing to note is how irregular the validation curves are with their zig-zag shape. We also note the <i>high bias</i> - in particular on accuracy. This is likely a result of the small model that is not able to learn the characteristics of the data properly. <i>Variance is low</i> with only minor differences between the train and validation curves across all metrics.</p>
 
-                <p>Ideally however, we would use something like <a href="https://keras-team.github.io/keras-tuner/">Keras Tuner</a> to properly build and evaluate an architecture like this. But as this is a very resource intensive process we will put it off for future work when using a more powerful GPU.</p>
+                <p>Ideally however, we would use something like <a href="https://keras-team.github.io/keras-tuner/" target="_blank" rel="noopener">Keras Tuner</a> to properly build and evaluate an architecture like this. But as this is a very resource intensive process we will put it off for future work when using a more powerful GPU.</p>
 
                 <h3 class="top-margin-h3">Plot confusion matrix</h3>
 
@@ -378,7 +378,7 @@
 
                 <h3 class="top-margin-h3">Check training history</h3>
 
-                <p>When inspecting the metrics during training we note lower bias than with previous approaches. The accuracy, AUC and recall curves are reaching higher on the train set than before. The training loss also keeps decreasing indicating that the learning capacity of the model hasn't reached its limit yet. However, all four metrics stagnates on the validation set after around 25 epochs and gives us a model with high variance. This discrepancy between the performance on the train and validation sets are can be a result of a too small dataset. One of the best ways of dealing with high variance is thus to add more data.</p>
+                <p>When inspecting the metrics during training we note lower bias than with previous approaches. The accuracy, AUC and recall curves are reaching higher on the train set than before. The training loss also keeps decreasing indicating that the learning capacity of the model hasn't reached its limit yet. However, all four metrics stagnates on the validation set after around 25 epochs and gives us a model with high variance. This discrepancy in performance between the train and validation sets can be a result of a too <i>small</i> dataset. One of the best ways of dealing with high variance is normally to let the model train on more data.</p>
 
                 <figure class="full-image figure-specs">
                     <a href="../images/skin-cancer/training-history-xception.png"><img class="full-image" src="../images/skin-cancer/training-history-xception.png" alt="Training history on the train and evaluation sets for the Xception model using data augmentation."></a>
@@ -492,9 +492,9 @@
 
                 <p>In order to get a more holistic view of the models' performance, we should compare the metrics on the train and validation sets as well. As for the baseline and augmented baseline, the models reach their maximum learning capacity early on - meaning that there is little room for improvements even though we would add more data. However, the Xception model keeps improving on the training set even after the validation metrics have stagnated. The resulting high variance can often be treated by adding more data to the model with a resulting boost in performance.</p>
 
-                <p>Thus, if we are limited to current data, it might be better to go with the data augmented baseline as its performance is comparable to the larger Xception model but is faster to train, takes less space on disk and is in general less complex. It's also more reliable than the baseline without augmented data. However, if there is a way to collect more data, the Xception model will likely do significantly better across most, if not all, metrics.</p>
+                <p>Thus, if we are limited to current data, it might be better to go with the data augmented baseline as its performance is comparable to the larger Xception model, but is faster to train, takes less space on disk and is in general less complex. It's also more reliable than the baseline without augmented data. However, if there is a way to collect more data, the Xception model will likely do significantly better across most, if not all, metrics.</p>
 
-                <p>We conclude that it is possible to classify malignant from benign skin cancer using deep learning. Future work should start by collecting more data as it will likely yield the largest improvements.</p>
+                <p><i>We conclude that it is possible to classify malignant from benign skin cancer using deep learning.</i> Future work should start by collecting more data as it will likely yield the largest improvements.</p>
 
                 <div class="bottom-space">
                 </div>
