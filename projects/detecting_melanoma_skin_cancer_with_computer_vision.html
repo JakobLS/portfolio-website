@@ -75,17 +75,21 @@
 
                 <p>Running above code, we can confirm that we are dealing with a small dataset. 2110 images for training, 527 for validation and 660 for testing.</p>
 
-                <figure class="full-image figure-specs">
-                    <a href="../images/skin-cancer/confirming-data-size.png"><img class="full-image" src="../images/skin-cancer/confirming-data-size.png" alt="Confirming dataset size."></a>
-                    <figcaption class="figure-caption">Confirming dataset size.</figcaption>
-                </figure>
+                <div class="images-div">
+                    <figure class="full-image figure-specs">
+                        <a href="../images/skin-cancer/confirming-data-size.png"><img class="full-image" src="../images/skin-cancer/confirming-data-size.png" alt="Confirming dataset size."></a>
+                        <figcaption class="figure-caption">Confirming dataset size.</figcaption>
+                    </figure>
+                </div>
 
                 <p>Additionally, we can do a quick sanity check on the three generators. We want the train data batches to have size <span class="inline-code">(32, 224, 224, 3)</span> while the labels should have size <span class="inline-code">(32,)</span>. 32 refers to the batch size, while 224 and 224 to the image size and 3 to the image channel. Since we are working with color images, there should be one dimension for each RGB color.</p>
 
-                <figure class="full-image figure-specs">
-                    <a href="../images/skin-cancer/generator-confirmation.png"><img class="full-image" src="../images/skin-cancer/generator-confirmation.png" alt="Confirming data generator dimensions."></a>
-                    <figcaption class="figure-caption">Confirming data generator dimensions.</figcaption>
-                </figure>
+                <div class="images-div">
+                    <figure class="full-image figure-specs">
+                        <a href="../images/skin-cancer/generator-confirmation.png"><img class="full-image" src="../images/skin-cancer/generator-confirmation.png" alt="Confirming data generator dimensions."></a>
+                        <figcaption class="figure-caption">Confirming data generator dimensions.</figcaption>
+                    </figure>
+                </div>
 
                 <p>Next up, we will visualise some images by class to get a better understanding of what we are working with. These are all loaded from the train set.</p>
 
