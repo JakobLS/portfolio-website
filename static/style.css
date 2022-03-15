@@ -360,6 +360,17 @@ a:active  {color: #A9A9A9;}
   border-radius: 10px;
 }
 
+/* p.lighter-text {
+  color: grey;
+} */
+
+
+
+
+
+
+
+
 
 /* Table CSS */
 .tg {
@@ -522,6 +533,11 @@ a:active  {color: #A9A9A9;}
   .images-div {
     width: 80%
   }
+
+  /* .taxis-inner.images-div-smaller {
+    background-color: lime;
+    width: 60%;
+  } */
 
 }
 

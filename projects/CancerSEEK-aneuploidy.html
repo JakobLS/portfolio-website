@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:description" content="Assessing Abnormal Chromosomes for Cancer Detection using Machine Learning">
+    <meta property="og:image" content="../images/cancerseek2-resized.jpg">
+  
+
+    <title>Assessing Abnormal Chromosomes for Cancer Detection using Machine Learning</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" rel="stylesheet" type="text/css"/>
+    <link href="../static/style.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" type="image/png" href="../images/favicon-96x96.png">
+
+    <!-- Google fonts for code syntax highlightning -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200;300&display=swap" rel="stylesheet">
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-QZ3TK8J9QP"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-QZ3TK8J9QP');
+    </script>
+  </head>
+
+  <body>
+    <header class="project-header">
+        <div class="project-header-inner">
+            <p><a href="../">Home</a></p>
+        </div>
+    </header>
+
+    <main>
+        <div class="taxis-outer">
+            <div class="taxis-inner">
+                <h1 class="project_h1">Cancer Detection with Abnormal Chromosome Levels using Machine Learning</h1>
+
+                <figure class="full-image figure-specs">
+                  <a href="../images/cancerseek2-resized.jpg"><img class="full-image rounded-corners" src="../images/cancerseek2-resized.jpg" alt="Cancer Detection with Abnormal Chromosome Levels using Machine Learning"></a>
+                  <figcaption class="figure-caption">Cancer Detection with Abnormal Chromosome Levels using Machine Learning</figcaption>
+                </figure>
+
+                <p>Update March 15, 2022: Summarising the work in an article. </p>
+
+                <p>There were over 18 million new cancer cases around the world in 2020, and close to 10 million people died of the desease during the same year. Many cancers can be cured if detected early and treated effectively. Thus, the ability to early detect cancer in the body through a simple blood test has the potential to save millions of lives.</p>
+
+                <p>In this article, we will use a publicly available dataset and attempt to improve the results obtained by a research team at Johns Hopkins University. <a href="https://www.pnas.org/doi/10.1073/pnas.1910041117">This</a> is the link to their publication.</p>
+
+                <p>The approach we will take is as follows; after initial data inspection and split into train and test sets, we will apply data transformation according to the publication before visualising it to verify that the transformation is correct. We then use the entire dataset (no split into train and test sets), apply the transformations before training and evaluating several models. By splitting up the data visualisation and model training steps like this, it will be easier to get a good understanding of how the transformations affect the data.</p>
+
+                <p>Furthermore, after correspondence with the research team, we'll train models on both the entire dataset using all the columns, as well as on only the <span class="inline-code">Aneuploidy</span> column.</p>
+
+                <ul>
+                  <li><i>Feature set 1</i>: <span class="inline-code">Aneuploidy</span>,	<span class="inline-code">Mutation</span>,	<span class="inline-code">AFP</span>,	<span class="inline-code">CA-125</span>,	<span class="inline-code">CA19-9</span>,	<span class="inline-code">CEA</span>,	<span class="inline-code">HGF</span>,	<span class="inline-code">OPN</span>,	<span class="inline-code">Prolactin</span> and	<span class="inline-code">TIMP-1</span></li>
+                  <li><i>Feature set 2</i>: <span class="inline-code">Aneuploidy</span></li>
+                </ul>
+
+                <h2 class="top-margin-h2">Data Exploration and Cleaning</h2>
+
+                <p>The data consists of only 1695 samples. 883 of these belong to patients with nonmetastatic cancer (non-null <span class="inline-code">AJCC Stage</span>) while 812 are healthy controls, as displayed below.</p>
+
+                <div class="images-div">
+                  <figure class="full-image figure-specs">
+                    <a href="../images/CancerSEEK/info.png"><img class="full-image" src="../images/CancerSEEK/info.png" alt="Dataset information."></a>
+                    <figcaption class="figure-caption">Dataset information.</figcaption>
+                  </figure>
+                </div>
+
+                <p>We note that there are 564 <span class="inline-code">NULL</span>s in the <span class="inline-code">Aneuploidy</span> column as well (1695-1131=564).</p>
+
+                <p>Another way, perhaps more visually attractive, of displaying missing values is through a plot. This also has the inherit advantage of showing us in which rows the values are missing.</p>
+
+                <figure class="full-image figure-specs">
+                  <a href="../images/CancerSEEK/missing-values.png"><img class="full-image" src="../images/CancerSEEK/missing-values.png" alt="Missing values by row."></a>
+                  <figcaption class="figure-caption">Missing values by row.</figcaption>
+                </figure>
+
+                <p>Above plot makes it visually quite clear that there are only missing values in the <span class="inline-code">Aneuploidy</span> and <span class="inline-code">Mutation</span> columns. Some algorithms will have problems dealing with missing values and they will thus be replaced with zeros.</p>
+
+                <p>Next, remove the patient and sample ID columns, clean up the column names and convert the tumor type column <span class="inline-code">Tumor type</span> into integer to facilitate further analysis. We'll end up with something like this.</p>
+
+                <figure class="full-image figure-specs">
+                  <a href="../images/CancerSEEK/initial-head.png"><img class="full-image" src="../images/CancerSEEK/initial-head.png" alt="Displaying first 5 rows."></a>
+                  <figcaption class="figure-caption">Displaying first 5 rows.</figcaption>
+                </figure>
+
+                <p>Although we will display the distribution of each column more in detail soon, we can start by calculating some descriptive statistics to get an initial feeling for the data.</p>
+
+                <figure class="full-image figure-specs">
+                  <a href="../images/CancerSEEK/describe.png"><img class="full-image" src="../images/CancerSEEK/describe.png" alt="Descriptive statistics."></a>
+                  <figcaption class="figure-caption">Descriptive statistics.</figcaption>
+                </figure>
+
+                <h3 class="top-margin-h3">Split into train and test sets and apply transformation</h3>
+
+                <p>The data is split 80:20 into train and test sets while maintaining the same class distribution as in the original dataset.</p>
+
+                <p>To account for variations in the lower limits of detection across different experiments, the researchers found the 90th percentile feature value in the healthy training samples. They then found any feature value <i>below</i> that threshold and set all values to the 90th percentile threshold. This transformation was done for all training and testing samples on the <span class="inline-code">Aneuploidy</span> scores, somatic <span class="inline-code">Mutation</span> scores, and protein concentrations.</p>
+
+                <p>There are no such default transformation classes in Scikit-learn, and we will thus have to create this logic ourselves as displayed below.</p>
+
+                <figure class="full-image figure-specs">
+                  <script src="https://gist.github.com/JakobLS/88ead34c9614531c62fcc05c1d728064.js"></script>
+                  <figcaption class="figure-caption">Custom data transformation class.</figcaption>
+                </figure>
+
+                <p>Once we've applied this transformation to both the train and test sets we can move forward by visualising the results.</p>
+
+                <h2 class="top-margin-h2">Visualise the data</h2>
+
+                <p>Visualise the data before and after applying the transformation to verify that it looks reasonable. In the plot below, the <i>left</i> side displays the original dataset <i>before</i> the transformation while the <i>right</i> side displays the data <i>after</i> applying the transformation. The right side also depicts the difference between the train (light blue) and test (light orange) set splits.</p>
+
+                <figure class="full-image figure-specs">
+                  <a href="../images/CancerSEEK/histogram-trans.png"><img class="full-image" src="../images/CancerSEEK/histogram-trans.png" alt="Histogram before and after transformation."></a>
+                  <figcaption class="figure-caption">Histogram before and after transformation.</figcaption>
+                </figure>
+
+                <p>There are significant differences in distribution throughout all variables before and after the transformation. The <i>max</i> values for each variable should be the <i>same</i> on both sides of the plot while the <i>min</i> values on the <i>right</i> should correspond to the 90th percentile on the <i>left</i>. Although it's hard to verify that the min values are exactly right by only visually studying the plot, the overall characteristic of each plot seem to be accurate. Additionally, and as desired, the distributions of the train and test sets <i>after</i> the transformation are very similar as well.</p>
+
+                <p>Let's take a closer look at the <span class="inline-code">Tumor type</span> distribution on the train and test sets.</p>
+
+                <figure class="full-image figure-specs">
+                  <a href="../images/CancerSEEK/target-distribution.png"><img class="full-image" src="../images/CancerSEEK/target-distribution.png" alt="Tumor type distribution on the train and test sets."></a>
+                  <figcaption class="figure-caption">Tumor type distribution on the train and test sets.</figcaption>
+                </figure>
+
+                <p>We can verify that the class proportion is roughly the same in both sets. It's also important to note how few samples there are for most tumor types, and in particular for <i>Ovary</i>, <i>Esophagus</i>, <i>Liver</i> and <i>Stomach</i> cancer. It might turn out to be extra difficult to get good results on those.</p>
+
+                <p>Plot the distribution for each variable by <span class="inline-code">Tumor type</span>, split by train and test sets, to get a better understanding for how they differ.</p>
+
+                <a name="tumor-type-distribution"></a>
+                <figure class="full-image figure-specs">
+                  <a href="../images/CancerSEEK/distribution-by-tumor-type.png"><img class="full-image" src="../images/CancerSEEK/distribution-by-tumor-type.png" alt="Distribution for each variable by tumor type."></a>
+                  <figcaption class="figure-caption">Distribution for each variable by tumor type.</figcaption>
+                </figure>
+
+                <p>The distribution for almost every single variable is very poor, and there are very small differences between each tumor type. <span class="inline-code">Aneuploidy</span>, <span class="inline-code">OPN</span> and perhaps <span class="inline-code">Prolactin</span> and <span class="inline-code">TIMP-1</span> seem to differ slightly more between the different tumor types though. Additionally, <span class="inline-code">Aneuploidy</span> seem in general to have higher values for cancerous (1-8) than for healthy (9) samples, and will likely play an important role in classifying between the two. The distribution for the train and test splits are fairly similar.</p>
+
+                <p>It's already quite clear that none of the distributions are normally distributed. To verify this statistically, we can conduct a normal test.</p>
+
+                <figure class="full-image figure-specs">
+                  <a href="../images/CancerSEEK/normal-test.png"><img class="full-image" src="../images/CancerSEEK/normal-test.png" alt="Normal test for each variable, split by train and test sets."></a>
+                  <figcaption class="figure-caption">Normal test for each variable, split by train and test sets.</figcaption>
+                </figure>
+
+                <p>As indicated by the p-values in the histograms above (see the title for each individual plot), none of the distributions are normal. </p>
+
+                <p>Next, calculate Pearson correlation coefficient between each variable in the dataset and display it in a correlation matrix. This will help us understand what features might affect the target variable <span class="inline-code">Tumor type</span> the most.</p>
+
+                <div class="images-div">
+                  <figure class="full-image figure-specs">
+                    <a href="../images/CancerSEEK/correlation-matrix.png"><img class="full-image" src="../images/CancerSEEK/correlation-matrix.png" alt="Pearson correlation matrix."></a>
+                    <figcaption class="figure-caption">Pearson correlation matrix.</figcaption>
+                  </figure>
+                </div>
+
+                <p>There's a pretty strong negative correlation (-0.55) for <span class="inline-code">Aneuploidy</span> with <span class="inline-code">Tumor type</span>, which is in line with our observations from the <a href="#tumor-type-distribution">tumor type distribution plot</a> earlier. <span class="inline-code">Prolactin</span> and <span class="inline-code">OPN</span> also display relatively strong negative correlations. Although <span class="inline-code">CA19-9</span>, <span class="inline-code">CA-125</span> and <span class="inline-code">AFP</span> display very low correlation individually, they might play a more important role in pair with other features. Since there is no collinearity beween the features and as we prefer to automate feature selection at a later stage (if applicable), we won't do more at this stage.</p>
+
+                <h2 class="top-margin-h2">Machine Learning Modelling</h2>
+
+                <p> We'll go with 10-fold cross-validation to properly evaluate model performance on the relatively small dataset. To incorporate the transformation logic while performing 10-fold cross-validation, model tuning and model evaluation, we will make use of pipelines. For visualisation purposes, the transformation steps were covered earlier in the notebook, but in order to run <i>unbiased</i> cross-validation, those steps have to be executed concurrently in each fold during cross-validation.</p>
+
+                <p>We will evaluate both individual and combined models (also referred to as ensemble models). The individual models are <span class="inline-code">Logistic Regression</span>, <span class="inline-code">KNN</span>, <span class="inline-code">SVC</span>, <span class="inline-code">Random Forest</span>, <span class="inline-code">Gradient Boosting</span>, <span class="inline-code">CatBoost</span>, <span class="inline-code">LightGBM</span> and <span class="inline-code">XGBoost</span>. Additionally, by combining several models into one using stacking or voting techniques, we can use the strength of each individual model to create an even more powerful model.</p>
+
+                <p>Scikit-learn makes this pretty easy by providing us with two classes; <span class="inline-code">StackingClassifier</span> and <span class="inline-code">VotingClassifier</span>. <span class="inline-code">StackingClassifier</span> consist in taking the output of individual models and use a final classifer to compute the prediction, while the <span class="inline-code">VotingClassifier</span> determine the final prediction by voting among the individual models.</p>
+
+                <p>The pipeline, which also includes a <span class="inline-code">StandardScaler</span>, and cross validation function for evaluating the models looks like this:</p>
+
+                <figure class="full-image figure-specs">
+                  <script src="https://gist.github.com/JakobLS/dbd1981f3ac3fa90b886a2d96e920a8e.js"></script>
+                  <figcaption class="figure-caption">Model evaluation function and Pipeline definition.</figcaption>
+                </figure>
+
+                <p>And the code for training and evaluating individual models:</p>
+
+                <figure class="full-image figure-specs">
+                  <script src="https://gist.github.com/JakobLS/87cdfaf0af1dea7c0e5ac95d03b76cad.js"></script>
+                  <figcaption class="figure-caption">Model evaluation code for individual models.</figcaption>
+                </figure>
+
+                <p>And this is how the ensemble models are evaluated. Although only the <span class="inline-code">StackingClassifier</span> is shown below, the code is very similar for both types of ensemble models.</p>
+
+                <figure class="full-image figure-specs">
+                  <script src="https://gist.github.com/JakobLS/1faed4037d02240774160cbc2128f9f5.js"></script>
+                  <figcaption class="figure-caption">Model evaluation code for StackingClassifiers.</figcaption>
+                </figure>
+
+                <h3 class="top-margin-h3">Train and Test Models using All Features</h3>
+
+                <h4 class="top-margin-h3">Individual Models</h4>
+
+                <p>Training and evaluating the <i>individual</i> models on <i>all</i> features yields the following results:</p>
+
+                <figure class="full-image figure-specs">
+                  <a href="../images/CancerSEEK/individual-model-summary-all-features.png"><img class="full-image" src="../images/CancerSEEK/individual-model-summary-all-features.png" alt="Individual model summary using all features."></a>
+                  <figcaption class="figure-caption">Individual model summary using all features.</figcaption>
+                </figure>
+
+                <p>We note that the more powerful models, Gradient Boosting, CatBoost, LightGBM and XGBoost overfit on the train set with an AUC of 1.0 while still performing better on the test set compared to the other models. Most performant are XGBoost (1.0 AUC on the train set and 0.89 on the test set) and CatBoost (0.99 AUC on the train set and 0.88 on the test set) though.</p>
+
+                <h4 class="top-margin-h3">Ensemble Models</h4>
+
+                <p>All models will be used in the <span class="inline-code">VotingClassifier</span> ensemble while we will exclude Random Forest and SVC in the <span class="inline-code">StackingClassifier</span> models. These are excluded because they were similar to one or several of the other models without being better on any single metric (I have not included all the plots in the article to verify this). Since the general idea with ensemble models is to leverage each individual model's strength, the individual models without any strenghts relative the other models will be excluded. Some other ensemble model characteristics we choose are:</p>
+
+                <p>For the voting classifiers</p>
+
+                <ul>
+                  <li>We will use <span class="inline-code">voting='soft'</span> as it is the recommended approach for well-calibrated classifers (which these are since we've done hyperparameter tuning).</li>
+                  <li>Use <span class="inline-code">weights=[1, 3, 1, 4, 2, 4, 4, 3]</span> to give more weight to more performant and unique models (higher means more weight) such as Random Forest, CatBoost and LightGBM.</li>
+                </ul>
+
+                <p>The stacking classifiers will all use <span class="inline-code">passthrough=True</span> to make sure that the final estimator is trained on each individual model's predictions as well as on the original training data. Additionally, the final estimator will differ between the different ensembles as follows:</p>
+
+                <ul>
+                  <li><i>Stacking Classifier 1</i>: Logistic Regression</li>
+                  <li><i>Stacking Classifier 2</i>: Random Forest</li>
+                  <li><i>Stacking Classifier 3</i>: Tuned XGBoost</li>
+                  <li><i>Stacking Classifier 4</i>: Default XGBoost</li>
+                  <li><i>Stacking Classifier 5</i>: Tuned CatBoost</li>
+                </ul>
+
+                <p>There are many more combinations and characteristics that can, and should, be evaluated. However, this is a <i>very</i> time consuming task, with limited upsides, and we will thus not spend more time on that here. Below are the results after training and evaluating the ensemble models.</p>
+
+                <figure class="full-image figure-specs">
+                  <a href="../images/CancerSEEK/ensemble-model-summary-all-features.png"><img class="full-image" src="../images/CancerSEEK/ensemble-model-summary-all-features.png" alt="Ensemble model summary using all features."></a>
+                  <figcaption class="figure-caption">Ensemble model summary using all features.</figcaption>
+                </figure>
+
+                <p>The most performant ensemble model is the <i>Voting Classifier</i> (1.0 AUC on the train set and 0.88 on test set) along with <i>Stacking Classifier 5</i> (0.98 AUC on the train set and 0.89 on the test set). The disadvantage with these ensemble models though, a part from taking very long time to train, is that there is currently no good way to properly understand how they make their predictions. For the individual models it's possible to calculate feature importance or SHAP values, but the ensemble models are, as it's commonly referred to, still black boxes.</p>
+
+                <h4 class="top-margin-h3">Model Explanation - Confusion Matrix & Sensitivity</h4>
+
+                <p>Let's take a deeper look at the strengths and weaknesses of the models in terms of which classes they perform best on. We can do that using a confusion matrix and a bar plot for the sensitivities, split by <span class="inline-code">Tumor type</span>. For brevity, focus only on the most performant XGBoost model.</p>
+
+                <div class="images-div">
+                  <figure class="full-image figure-specs">
+                    <a href="../images/CancerSEEK/confusion-matrix-xgboost-all-features.png"><img class="full-image" src="../images/CancerSEEK/confusion-matrix-xgboost-all-features.png" alt="Confusion Matrix for XGBoost using all features."></a>
+                    <figcaption class="figure-caption">Confusion Matrix for XGBoost using all features.</figcaption>
+                  </figure>
+                </div>
+
+                <ul>
+                  <li>Specificity: 99%</li>
+                  <li>Sensitivity: 98.1%</li>
+                </ul>
+
+                <div class="images-div">
+                  <figure class="full-image figure-specs">
+                    <a href="../images/CancerSEEK/sensitivities-xgboost-all-features.png"><img class="full-image" src="../images/CancerSEEK/sensitivities-xgboost-all-features.png" alt="Sensitivity per Tumor type for XGBoost using all features."></a>
+                    <figcaption class="figure-caption">Sensitivity per Tumor type for XGBoost using all features.</figcaption>
+                  </figure>
+                </div>
+
+                <p>The model does very well on distinguishing cancer from healthy samples; 802 out of the 812 healthy samples are correctly classified as healthy, corresponding to a specificity of 99%. Correspondingly, 866 out of 883 cancer samples are correctly classified as cancer, yielding a sensitivity of 98.1%.</p>
+
+                <p>However, there are more difficulties determining which cancer type it is, as displayed in the sensitivity plot. <i>Colorectum</i> and <i>Ovary</i> score quite high at around 85% and 70% respectively, but half of the sensitivities are 35% or lower. There also seem to be some relationship between the low class count and poor performance on some of the tumor types, such as <i>Esophagus</i>, <i>Liver</i> and <i>Stomach</i>, which all have 60 or less total samples in the dataset. By having fewer examples for the model to learn from, it's reasonable to assume that the performance could degrade. <i>Ovary</i> seem to be the only exception with relatively high scores despite low class count (48). Slighly more beneficial distributions, as observed in <a href="#tumor-type-distribution">previous box plot</a> (see class 5), might explain this.</p>
+
+                <h4 class="top-margin-h3">Model Explanation - SHAP</h4>
+
+                <p>Let's calculate SHAP values for the most performant individual models to get some insights into what features are most important.</p>
+
+                <div class="images-div">
+                  <figure class="full-image figure-specs">
+                    <a href="../images/CancerSEEK/shap-xgboost-all.png"><img class="full-image" src="../images/CancerSEEK/shap-xgboost-all.png" alt="SHAP values for XGBoost."></a>
+                    <figcaption class="figure-caption">SHAP values for XGBoost.</figcaption>
+                  </figure>
+                </div>
+
+                <p>The way we can interpret the SHAP values for the XGBoost model is as follows (covering some example features). Have in mind that the <i>lower</i> <span class="inline-code">Tumor type</span> classes 1-8 are cancerous tumors while the <i>highest</i> class 9 is a healthy control group.</p>
+
+                <ul>
+                  <li><i>Higher</i> values (red) of <span class="inline-code">HGF</span> leads to an <i>increased</i> probability for cancer (lower class numbers).</li>
+                  <li><i>Higher</i> values of <span class="inline-code">OPN</span> leads to an <i>increased</i> probability for cancer.</li>
+                  <li><i>Higher</i> values of <span class="inline-code">TIMP-1</span> leads to an <i>increased</i> probability for cancer.</li>
+                  <li><i>Lower</i> values of <span class="inline-code">CEA</span> leads to an <i>increased</i> probability for cancer.</li>
+                  <li><i>Higher</i> values of <span class="inline-code">Prolactin</span> leads to a <i>decreased</i> probability for cancer.</li>
+                  <li>Although the distribution is quite mixed for <span class="inline-code">Aneuploidy</span>, in general <i>higher</i> values leads to a <i>decreased</i> probability for cancer.</li>
+                </ul>
+
+                <p>According to the publication, 49% of the 883 cancer samples had detectable <span class="inline-code">Aneuploidy</span> levels. This might explain our mixed observations above.</p>
+
+                <p>We can make corresponding observations for CatBoost. We make roughly the same conclusions for both models.</p>
+
+                <div class="images-div">
+                  <figure class="full-image figure-specs">
+                    <a href="../images/CancerSEEK/shap-catboost-all.png"><img class="full-image" src="../images/CancerSEEK/shap-catboost-all.png" alt="SHAP values for CatBoost."></a>
+                    <figcaption class="figure-caption">SHAP values for CatBoost.</figcaption>
+                  </figure>
+                </div>
+
+                <ul>
+                  <li><i>Higher</i> values of <span class="inline-code">HGF</span> leads to an <i>increased</i> probability for cancer.</li>
+                  <li><i>Higher</i> values of <span class="inline-code">OPN</span> leads to an <i>increased</i> probability for cancer.</li>
+                  <li><i>Higher</i> values of <span class="inline-code">CEA</span> leads to a <i>decreased</i> probability for cancer.</li>
+                  <li><i>Higher</i> values of <span class="inline-code">Aneuploidy</span> leads to a <i>decreased</i> probability for cancer.</li>
+                </ul>
+
+                <h3 class="top-margin-h3">Train and Test Models using only the <span class="inline-code">Aneuploidy</span> Feature</h3>
+
+                <h4 class="top-margin-h3">Individual Models</h4>
+
+                <p>As explained in the beginning, after a dialogue with the research team, I was asked to also assess the model performance using the <span class="inline-code">Aneuploidy</span> feature only. Doing so, yields the following results.</p>
+
+                <figure class="full-image figure-specs">
+                  <a href="../images/CancerSEEK/individual-model-summary-aneuploidy-only.png"><img class="full-image" src="../images/CancerSEEK/individual-model-summary-aneuploidy-only.png" alt="Individual model summary using Aneuploidy only."></a>
+                  <figcaption class="figure-caption">Individual model summary using Aneuploidy only.</figcaption>
+                </figure>
+
+                <p>By feeding the model 1/10th of the feature set, and thus less information to learn from, we would expect the results to be worse than before. Above plot confirms this. Both sensitivity and AUC on the test set is more or less the same for all models, except of Gradient Boosting which seem to overfit significantly. By only using the <span class="inline-code">Aneuploidy</span> feature, the model seem to have harder to distinguish <i>between</i> the different tumor types. Still, the predictions are pretty good for only including one feature as input.</p>
+
+                <h4 class="top-margin-h3">Ensemble Models</h4>
+
+                <p>The following models are included in the ensembles; KNN, Gradient Boosting, CatBoost, LightGBM and XGBoost, which is one less (Logistic Regression) than when we used the entire dataset.</p>
+
+                <figure class="full-image figure-specs">
+                  <a href="../images/CancerSEEK/ensemble-model-summary-aneuploidy-only.png"><img class="full-image" src="../images/CancerSEEK/ensemble-model-summary-aneuploidy-only.png" alt="Ensemble model summary using Aneuploidy only."></a>
+                  <figcaption class="figure-caption">Ensemble model summary using Aneuploidy only.</figcaption>
+                </figure>
+
+                <p>We note that all ensemble models have more or less the same AUC and sensitivity on the test set; around 60%. Only the <span class="inline-code">VotingClassifier</span> overfits the data.</p>
+
+                <h4 class="top-margin-h3">Model Explanation - Confusion Matrix & Sensitivity</h4>
+
+                <p>Let's plot confusion matrix and sensitivities for the most performant model. There's very little difference between each model, but let's go with the CatBoost as it's the most performant individual model while still performing in par with the more complex <i>Stacking Classifier 1</i>.</p>
+
+                <div class="images-div">
+                  <figure class="full-image figure-specs">
+                    <a href="../images/CancerSEEK/confusion-matrix-catboost-aneuploidy-only.png"><img class="full-image" src="../images/CancerSEEK/confusion-matrix-catboost-aneuploidy-only.png" alt="Confusion Matrix for CatBoost using Aneuploidy only."></a>
+                    <figcaption class="figure-caption">Confusion Matrix for CatBoost using Aneuploidy only.</figcaption>
+                  </figure>
+                </div>
+
+                <ul>
+                  <li>Specificity: 94.6%</li>
+                  <li>Sensitivity: 77.6%</li>
+                </ul>
+
+                <div class="images-div">
+                  <figure class="full-image figure-specs">
+                    <a href="../images/CancerSEEK/sensitivities-catboost-aneuploidy-only.png"><img class="full-image" src="../images/CancerSEEK/sensitivities-catboost-aneuploidy-only.png" alt="Sensitivity per Tumor type for CatBoost using Aneuploidy only."></a>
+                    <figcaption class="figure-caption">Sensitivity per Tumor type for CatBoost using Aneuploidy only.</figcaption>
+                  </figure>
+                </div>
+
+                <p>The model is able to distinguish 768 out of 812 healthy samples, yielding a specificity of 94.6%. Sensitivity is at 77.6% as it correctly classifies 685 out of 883 cancer samples.</p>
+
+                <p>The individual sensitivies per tumor type are very weak though with only <i>Colorectum</i> scoring fairly well. All other tumor types score very low. It thus seem like as if <span class="inline-code">Aneuploidy</span> can be used to distinguish cancer from non-cancer samples fairly well, but it falls short when determining <i>which</i> cancer type it is.</p>
+
+                <h4 class="top-margin-h3">Model Explanation - SHAP</h4>
+
+                <p>Let's also briefly also calculate the SHAP values. Obviously, since we only have one column to work with - <span class="inline-code">Aneuploidy</span> - only that column will affect the predictions. Let's see if we can confirm the observations from when we used the entire feature set though. Display only SHAP values for the CatBoost model.</p>
+
+                <div class="images-div">
+                  <figure class="full-image figure-specs">
+                    <a href="../images/CancerSEEK/shap-catboost-aneuploidy-only.png"><img class="full-image" src="../images/CancerSEEK/shap-catboost-aneuploidy-only.png" alt="SHAP values for CatBoost."></a>
+                    <figcaption class="figure-caption">SHAP values for CatBoost.</figcaption>
+                  </figure>
+                </div>
+
+                <p>As identified before, <i>higher</i> values of <span class="inline-code">Aneuploidy</span> seem to <i>decrease</i> the probability for cancer.</p>
+
+                <h2 class="top-margin-h2">Conclusions</h2>
+
+                <p>We have trained and evaluated several different machine learning models to determine whether a sample is cancerous or healthy. After correspondence with the research team, two set of features have been evaluated as specified below.</p>
+
+                <ul>
+                  <li><i>Feature set 1</i>: <span class="inline-code">Aneuploidy</span>,	<span class="inline-code">Mutation</span>,	<span class="inline-code">AFP</span>,	<span class="inline-code">CA-125</span>,	<span class="inline-code">CA19-9</span>,	<span class="inline-code">CEA</span>,	<span class="inline-code">HGF</span>,	<span class="inline-code">OPN</span>,	<span class="inline-code">Prolactin</span> and	<span class="inline-code">TIMP-1</span></li>
+                  <li><i>Feature set 2</i>: <span class="inline-code">Aneuploidy</span></li>
+                </ul>
+
+                <p>By using the entire feature set (<i>Feature Set 1</i>) the results are significantly better than when only the single <span class="inline-code">Aneuploidy</span> feature is used. This is reasonable as we would expect more data and input for the model to base its predictions on to also yield a more performant model.</p>
+
+                <div class="images-div">
+                  <figure class="full-image figure-specs">
+                    <a href="../images/CancerSEEK/final-model-summary.png"><img class="full-image" src="../images/CancerSEEK/final-model-summary.png" alt="Performance difference between the two feature sets when the best model is being used."></a>
+                    <figcaption class="figure-caption">Performance difference between the two feature sets when the best model is used.</figcaption>
+                  </figure>
+                </div>
+
+                <p>With <i>Feature Set 1</i>, we correctly classify 98.1% of the cancer samples (sensitivity = 98.1%) while 99% of the healthy samples are correctly classified (specificity = 99%). Corresponding sensitivity and specificity is 77.6% and 94.6%, respectively, when using <span class="inline-code">Aneuploidy</span> only. That's still pretty good for only using one feature.</p>
+
+                <p>This is a significant improvement compared with the publication that used a Random Forest model to get 75% sensitivity at 99% specificity (our Random Forest would probably have roughly the same performance had it been optimized for specificity rather than AUC). The only difference we've incorporated here is evaluating other models as well. XGBoost, which turned out to be the most performant model, is often more powerful than Random Forest, and that turned out to be the case here as well.</p>
+
+                <div class="bottom-space">
+                </div>
+            </div>
+        </div>
+
+    </main>
+    <footer class="footer">
+      <div>
+      </div>
+    </footer>
+  </body>
+</html>
+
+
+
+
+
+
