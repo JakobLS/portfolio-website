@@ -45,7 +45,7 @@
                   <figcaption class="figure-caption">Cancer Detection with Abnormal Chromosome Levels using Machine Learning</figcaption>
                 </figure>
 
-                <p>Update March 15, 2022: Summarising the work in an article. </p>
+                <p>Update March 15, 2022: Summarising the work in an article.</p>
 
                 <p>There were over 18 million new cancer cases around the world in 2020, and close to 10 million people died of the desease during the same year. Many cancers can be cured if detected early and treated effectively. Thus, the ability to early detect cancer in the body through a simple blood test has the potential to save millions of lives.</p>
 
@@ -384,7 +384,7 @@
 
                 <p>With <i>Feature Set 1</i>, we correctly classify 98.1% of the cancer samples (sensitivity = 98.1%) while 99% of the healthy samples are correctly classified (specificity = 99%). Corresponding sensitivity and specificity is 77.6% and 94.6%, respectively, when using <span class="inline-code">Aneuploidy</span> only. That's still pretty good for only using one feature.</p>
 
-                <p>This is a significant improvement compared with the publication that used a Random Forest model to get 75% sensitivity at 99% specificity (our Random Forest would probably have roughly the same performance had it been optimized for specificity rather than AUC). The only difference we've incorporated here is evaluating other models as well. XGBoost, which turned out to be the most performant model, is often more powerful than Random Forest, and that turned out to be the case here as well.</p>
+                <p>This is a significant improvement compared with the publication that used a Random Forest model to get 75% sensitivity at 99% specificity (our Random Forest would have had roughly the same performance had it been optimized for specificity rather than AUC). The main difference in this implementation has been to evaluate additional models, where XGBoost turned out to be the most performant.</p>
 
                 <div class="bottom-space">
                 </div>
