@@ -107,6 +107,8 @@
 
                 <p><span class="inline-code">Instrumentalness</span> was highly <i>negatively</i> correlated with song popularity. This means that songs that are popular have in general lower <span class="inline-code">instrumentalness</span>. This makes intuitive sense as most songs you hear on the popular radio stations are not instrumental. Let's very this statistically using an A/B test.</p>
 
+                <p>Since we have more than 2,000 samples, we will use Jarque-Bera and Scipy's Normaltest to test for normality.</p>
+
                 <p>Plot <span class="inline-code">instrumentalness</span> by popularity using a histogram. Then calculate skewness and kurtosis and test for normality.</p>
 
                 <figure class="full-image figure-specs">
@@ -115,8 +117,8 @@
                 </figure>
 
                 <figure class="full-image figure-specs">
-                  <a href="../images/song-popularity/test-for-normality-instrumentalness.png"><img class="full-image" src="../images/song-popularity/test-for-normality-instrumentalness.png" alt="Skewness, kurtosis and a normality test."></a>
-                  <figcaption class="figure-caption">Skewness, kurtosis and a normality test for instrumentalness.</figcaption>
+                  <a href="../images/song-popularity/normaltest-instrumentalness.png"><img class="full-image" src="../images/song-popularity/normaltest-instrumentalness.png" alt="Skewness, kurtosis and a normality test."></a>
+                  <figcaption class="figure-caption">Skewness, kurtosis and test of normality using Jarque-Bera and Normaltest for instrumentalness.</figcaption>
                 </figure>
 
                 <p>Both skewness and kurtosis are above the threshold of ±3 for popular songs which indicates non-normality. A visual inspection confirms this. Although unpopular songs have acceptable values, we choose Kruskal-Wallis test for testing the null hypothesis.</p>
@@ -173,10 +175,10 @@
                   <figcaption class="figure-caption">Danceability distribution displayed on a histogram.</figcaption>
                 </figure>
 
-                <p>Both distributions seem to be close to normally distributed by a visual inspection. Let's calculate some statistics and test for normality using the Shapiro-Wilk test. Although the p-value may not be accurate for samples larger than 5000, the test statistics should be accurate and help us provide some indications on where to head next.</p>
+                <p>Both distributions seem to be close to normally distributed by a visual inspection.</p>
 
                 <figure class="full-image figure-specs">
-                  <a href="../images/song-popularity/normal-test-danceability.png"><img class="full-image" src="../images/song-popularity/normal-test-danceability.png" alt="Normality test results for Danceability."></a>
+                  <a href="../images/song-popularity/normaltest-danceability.png"><img class="full-image" src="../images/song-popularity/normaltest-danceability.png" alt="Normality test results for Danceability."></a>
                   <figcaption class="figure-caption">Normality test results for Danceability.</figcaption>
                 </figure>
 
@@ -221,7 +223,7 @@
                 <p>Calculating skewness, kurtosis and testing for normality results in the following.</p>
 
                 <figure class="full-image figure-specs">
-                  <a href="../images/song-popularity/test-for-normality-energy.png"><img class="full-image" src="../images/song-popularity/test-for-normality-energy.png" alt="Testing Energy level for normality."></a>
+                  <a href="../images/song-popularity/normaltest-energy.png"><img class="full-image" src="../images/song-popularity/normaltest-energy.png" alt="Testing Energy level for normality."></a>
                   <figcaption class="figure-caption">Testing Energy level for normality.</figcaption>
                 </figure>
 
@@ -268,7 +270,7 @@
                 </figure>
 
                 <figure class="full-image figure-specs">
-                  <a href="../images/song-popularity/test-for-normality-duration.png"><img class="full-image" src="../images/song-popularity/test-for-normality-duration.png" alt="Testing Duration for normality."></a>
+                  <a href="../images/song-popularity/normaltest-duration.png"><img class="full-image" src="../images/song-popularity/normaltest-duration.png" alt="Testing Duration for normality."></a>
                   <figcaption class="figure-caption">Testing Duration for normality.</figcaption>
                 </figure>
 
@@ -313,7 +315,7 @@
                 </figure>
 
                 <figure class="full-image figure-specs">
-                  <a href="../images/song-popularity/normal-test-speechiness.png"><img class="full-image" src="../images/song-popularity/normal-test-speechiness.png" alt="Testing Speechiness for normality."></a>
+                  <a href="../images/song-popularity/normaltest-speechiness.png"><img class="full-image" src="../images/song-popularity/normaltest-speechiness.png" alt="Testing Speechiness for normality."></a>
                   <figcaption class="figure-caption">Testing Speechiness for normality.</figcaption>
                 </figure>
 
