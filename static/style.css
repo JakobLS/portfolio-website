@@ -303,6 +303,18 @@ a:active  {color: #A9A9A9;}
   width: 100%
 }
 
+.images-div-small {
+  margin: 0 auto;
+  text-align: center;
+  width: 100%
+}
+
+.images-div-tiny {
+  margin: 0 auto;
+  text-align: center;
+  width: 100%
+}
+
 .figure-caption {
   text-align: center;
   font-size: 80%;
@@ -532,6 +544,14 @@ a:active  {color: #A9A9A9;}
 
   .images-div {
     width: 80%
+  }
+
+  .images-div-small {
+    width: 60%
+  }
+
+  .images-div-tiny {
+    width: 40%
   }
 
   /* .taxis-inner.images-div-smaller {
