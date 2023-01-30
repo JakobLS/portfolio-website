@@ -1,4 +1,4 @@
-# Portfolio Website
+# Personal Website
 
-Portfolio website showcasing some of my work. 
+Personal website showcasing some of my work. 
 
