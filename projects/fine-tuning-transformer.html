@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:description" content="How to Fine-Tune an NLP Transformer Model on a task of your Choice">
+    <meta property="og:image" content="../images/looking-for-disasters.jpeg">
+  
+
+    <title>How to Fine-Tune an NLP Transformer Model on a task of your Choice</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" rel="stylesheet" type="text/css"/>
+    <link href="../static/style.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" type="image/png" href="../images/favicon-96x96.png">
+
+    <!-- Google fonts for code syntax highlightning -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200;300&display=swap" rel="stylesheet">
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-QZ3TK8J9QP"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-QZ3TK8J9QP');
+    </script>
+  </head>
+
+  <body>
+    <header class="project-header">
+        <div class="project-header-inner">
+            <p><a href="../">Home</a></p>
+        </div>
+    </header>
+
+    <main>
+        <div class="taxis-outer">
+            <div class="taxis-inner">
+                <h1 class="project_h1">How to Fine-Tune an NLP Transformer Model on a task of your Choice</h1>
+
+                <p>There’s been a lot of buzz around Natural Language Processing, or NLP, the last few years after important technological advances that has allowed more performant models even in situations with limited access to data. This literally exploded in November 2022 when OpenAI’s ChatGPT was launched. As a result, I‘d like to take the opportunity to show how you can fine-tune a pre-trained model on a task of your choice on your own.</p>
+
+                <figure class="full-image figure-specs">
+                    <a href="../images/looking-for-disasters.jpeg"><img class="full-image rounded-corners" src="../images/looking-for-disasters.jpeg" alt="Generated with OpenAI’s DALL-E 2 using the prompt “A cartoon of the Twitter bird while in search of interesting events”."></a>
+                    <figcaption class="figure-caption"><br>Generated with OpenAI’s <a href="https://openai.com/dall-e-2/" target="_blank" rel="noopener">DALL-E 2</a> using the prompt “A cartoon of the Twitter bird while in search of interesting events”.</figcaption>
+                </figure>
+
+                <p>Additionally, I will leverage both structured and unstructured data by processing both of it in the same model architecture. This can yield important performance improvements on some tasks.</p>
+                
+                <p>As an example, I will use the <a href="https://www.kaggle.com/competitions/nlp-getting-started/overview" target="_blank" rel="noopener">disaster dataset</a> which can be downloaded from Kaggle. You probably won’t simply download your data like this for a real project but rather spend significant amount of time preparing it by querying databases or accessing APIs though. Still, it serves our purpose in this case.</p>
+                <hr>
+
+                <h2 class="top-margin-h2">Analyse and Clean the Data</h2>
+
+                <p>Our task is to build a model to predict whether a tweet is about a real disaster or not. The data contains the following columns:</p>
+                <ul>
+                    <li><span class="inline-code">id</span> - a unique identifier for each tweet.</li>
+                    <li><span class="inline-code">text</span> - the tweet itself.</li>
+                    <li><span class="inline-code">location</span> - the location the tweet was sent from (may be blank).</li>
+                    <li><span class="inline-code">keyword</span> - a particular keyword from the tweet (may be blank).</li>
+                    <li><span class="inline-code">target</span> - only included in <span class="inline-code">train.csv</span>, denotes whether a tweet is about a real disaster (1) or not (0).</li>
+                </ul>
+
+                <p>I will additionally only use the data in the <span class="inline-code">train.csv</span> file since the test dataset doesn’t contain any labels. The <span class="inline-code">id</span> column can be excluded as it doesn’t contain any predictive value.</p>
+
+                <figure class="full-image figure-specs">
+                    <a href="../images/fine-tune-transformer/head.png"><img class="full-image rounded-corners" src="../images/fine-tune-transformer/head.png" alt="First 5 rows of the dataset."></a>
+                    <figcaption class="figure-caption"><br>First 5 rows of the dataset.</figcaption>
+                </figure>
+
+                <p>It’s a fairly small dataset with around 7600 samples. There are missing values in both the <span class="inline-code">keyword</span> (<1%) and <span class="inline-code">location</span> (>33%) column, which we can replace with something as simple as <span class="inline-code">no_keyword</span> and <span class="inline-code">no_location</span>.</p>
+
+                <p>There are a total of 110 duplicate tweets, with some labels not being consistent between these. This may cause problems during model training as the model won't know which label to trust. We could look up all the duplicate tweets individually and correct their labels. However, for the sake of this example, I will go with a more simplistic approach and drop them.</p>
+
+                <h3 class="top-margin-h3">Clean up the keyword and location columns</h3>
+
+                <p>The <span class="inline-code">keyword</span> column contains over 200 unique words, while the <span class="inline-code">location</span> column make up of more than 3300 different locations. Displaying the top 15 highest counts for each results in the following.</p>
+
+                <figure class="full-image figure-specs">
+                    <a href="../images/fine-tune-transformer/keyword-location.png"><img class="full-image rounded-corners" src="../images/fine-tune-transformer/keyword-location.png" alt="Counts of each group in the keyword and location columns."></a>
+                    <figcaption class="figure-caption"><br>Counts of each group in the keyword and location columns.</figcaption>
+                </figure>
+
+                <p>We can replace strings such as <span class="inline-code">%20</span>, which seem to be the only undesired characters, with a space in the <span class="inline-code">keyword</span> column.</p>
+
+                <p>The <span class="inline-code">location</span> column is very inconsistent; sometimes it refers to a continent, sometimes a country and sometimes a city. Additionally, there's nonsense data such as <span class="inline-code">World Wide!!</span>, <span class="inline-code">Live On Webcam</span> and <span class="inline-code">milky way</span> (not shown in the plot though).</p>
+
+                <p>The column is probably not so useful in its current state. There’s a lot of things we can do to extract more meaningful information from it, but one simple approach is to use a library to extract real cities or countries and use that as input to our model. This library will probably make several mistakes (such as not recognising a city name, or falsely interpreting an abbreviation as a city or country name), but it might still be better than what we have now. Depending on how much time we want to spend on this, the result will likely vary. There are many libraries available for this, each with their pros and cons. I will use <span class="inline-code">Geotext</span> since it's comparably fast. Other, likely better, options are <span class="inline-code">spaCy</span> and <span class="inline-code">geograpy3</span>.</p>
+
+                <p>If several cities are found, use the first, if no city is found, get the country, otherwise fill with <span class="inline-code">no_location</span>. This is a very naive approach, but still shows what can be done in terms of extracting a location from a text. Other, perhaps more thoughtful approaches might be to map the location with coordinates or geographical areas instead.</p>
+
+                <figure class="full-image figure-specs">
+                    <script src="https://gist.github.com/JakobLS/e74ac5a753916ef69d33c8d469416120.js"></script>
+                </figure>
+
+                <p>This brings down the unique number of locations in the <span class="inline-code">location</span> column to 726 instead of over 3300.</p>
+
+                <h3 class="top-margin-h3">Target Variable</h3>
+
+                <p>From before, we know that the target variable doesn’t contain any <span class="inline-code">Null</span>s. As shown, it’s a fairly evenly distributed dataset with 57% belonging to the <span class="inline-code">Not Disaster</span> and 43% to the <span class="inline-code">Real Disaster</span> class. Had one of the classes been significantly over represented, we would need to take some measures such as applying over- or under sampling, or think more deeply about different evaluation metrics.</p>
+
+                <div class="images-div-small">
+                    <figure class="full-image figure-specs">
+                        <a href="../images/fine-tune-transformer/target-variable.png"><img class="full-image rounded-corners" src="../images/fine-tune-transformer/target-variable.png" alt="Target Variable distribution."></a>
+                        <figcaption class="figure-caption">Target Variable distribution<br></figcaption>
+                    </figure>
+                </div>
+                <br>
+
+                <h3 class="top-margin-h3">Feature Engineering</h3>
+
+                <p>By cleaning the tweet text before extracting information such as the length of the tweet, number of punctuations, hashtags, etc., we might lose important information. For that reason, we will first extract additional features before cleaning the text. Having said that, it’s worth to experiment with the opposite approach as well.</p>
+
+                <p>We’ve already extracted relevant locations from the <span class="inline-code">location</span> column which we hope will improve the classifier. However, most of the useful information is probably contained in the tweets themselves. Perhaps, tweets that in general have longer words and fewer punctuations might be an indication for real disaster tweets.</p>
+
+                <p>There’s certainly a lot that can be done here, and I won’t do any thorough feature engineering other than creating some few features to display what can be done. For example:</p>
+                <ul>
+                    <li>Number of punctuations in the tweet (<span class="inline-code">!"#$%&\'()*+,-./:;<=>?@[\\]^_\{|}~</span>)</li>
+                    <li>Tweet length</li>
+                    <li>Average word length per tweet</li>
+                    <li>Word count in each tweet</li>
+                    <li>Number of stop words</li>
+                    <li>Number of hashtags in the tweet</li>
+                </ul>
+
+                <p>I’m using the <span class="inline-code">string</span> and <span class="inline-code">keyword</span>nltk libraries to get common punctuations and stop words in the english language.</p>
+
+                <figure class="full-image figure-specs">
+                    <script src="https://gist.github.com/JakobLS/e504dac8574382345a453d269f40bcea.js"></script>
+                </figure>
+
+                <p>Applying that results in the following dataframe.</p>
+
+                <figure class="full-image figure-specs">
+                    <a href="../images/fine-tune-transformer/feature-engineering.png"><img class="full-image rounded-corners" src="../images/fine-tune-transformer/feature-engineering.png" alt="Adding Engineered Features to the dataframe."></a>
+                    <figcaption class="figure-caption">Adding Engineered Features to the dataframe.</figcaption>
+                </figure>
+
+                <p>Now when we’ve used the original text to create some additional features, we can clean it up a little. Depending on what modelling approach we take, we might choose to clean the text more or less. For example, sequence models often do very well with only minor data cleaning, while bag-of-words models tend to prefer slightly more. We will only do minor text cleaning to keep it simple.</p>
+
+                <figure class="full-image figure-specs">
+                    <script src="https://gist.github.com/JakobLS/ccf7d2cd0b8741654d6257d069214103.js"></script>
+                </figure>
+
+                <h3 class="top-margin-h3">Visualise the distribution of the engineered features</h3>
+
+                <p>In order to get a better overview of the features we just engineered, it’s a good idea to plot them. We can do that using histograms. By adding ranges to the title, we get a more exact overview of each variable’s distribution.</p>
+
+                <figure class="full-image figure-specs">
+                    <a href="../images/fine-tune-transformer/histograms.png"><img class="full-image rounded-corners" src="../images/fine-tune-transformer/histograms.png" alt="Distribution of the engineered features displayed using histograms."></a>
+                    <figcaption class="figure-caption">Distribution of the engineered features displayed using histograms.</figcaption>
+                </figure>
+
+                <p>Takeaways from above plot:</p>
+                <ul>
+                    <li>We note that, in general, the distributions are pretty similar among both <span class="inline-code">Not Disaster</span> and <span class="inline-code">Real Disaster</span> throughout all variables. The exception might be <span class="inline-code">avg_word_length</span>, where <span class="inline-code">Real Disaster</span> in general seem to have longer words. This might perhaps be explained by that news papers and journalists are posting about real disasters more frequently, and they might be using less slang and more sophisticated words than the general public. However, the difference in distribution should be verified using statistical methods such as a T-test or Kruskal-Wallis.</li>
+                    <li>Most variables seem to be non-normally distributed. The exceptions might be <span class="inline-code">word_count</span> and perhaps <span class="inline-code">nbr_stopwords</span>. This, again, should be verified using statistical methods such as a Normaltest or Jarque-Bera.</li>
+                    <li>The most frequent tweet length is around 140 characters, while the longest in the dataset is 157. 99% are shorter than 143 characters. <span class="inline-code">Real Disaster</span> tweets might be slightly longer on average. A plausible explanation could be the same as for the difference in <span class="inline-code">avg_word_length</span>.</li>
+                    <li>Most tweets have no hashtags and rather few punctuations.</li>
+                </ul>
+
+                <h3 class="top-margin-h3">Correlations</h3>
+
+                <p>In order to get a better sense of which of the engineered features contribute most to the target variable, we can calculate the Pearson correlation and display it in a matrix.</p>
+
+                <figure class="full-image figure-specs">
+                    <a href="../images/fine-tune-transformer/correlation-matrix.png"><img class="full-image rounded-corners" src="../images/fine-tune-transformer/correlation-matrix.png" alt="Pearson Correlation Matrix."></a>
+                    <figcaption class="figure-caption">Pearson Correlation Matrix.</figcaption>
+                </figure>
+
+                <p>Several of the features have a (positive) correlation with the target variable, where the <span class="inline-code">tweet_length</span>, <span class="inline-code">avg_word_length</span>, <span class="inline-code">nbr_stopwords</span> and <span class="inline-code">nbr_punctuations</span> are the strongest. In general, as the value of these features increase, the probability for a real disaster also increases.</p>
+
+                <p><span class="inline-code">location</span> has a very weak (negative) correlation with the target. While disasters can strike everywhere, there's probably more that can be done to extract valuable information from this feature.</p>
+
+                <p>In general, there seem to be little multi-correlation between features. That’s good, because if it becomes too high, it might negatively affect the model performance.</p>
+
+                <p>It’s important to note that above correlations only take each variable into account separately. It’s possible that two or more weakly correlated variables might be very important together if combined.</p>
+
+                <hr>
+
+                <h2 class="top-margin-h2">Model Fine-Tuning</h2>
+
+                <p>There are two main approaches we can take when building the classifier; 1) a more traditional bag-of-words model (often machine learning), and 2) a sequence model (i.e. deep learning). The Transformer architecture is probably the most popular sequence model for NLP today. Depending on the size of the dataset, tweet length and perhaps the importance of context in the tweet, each approach may have its advantages.</p>
+
+                <p>Although we ideally should evaluate both approaches, I will choose a Transformer model approach to keep it simple. I’m also suspecting that it’s important for the model to understand the sentence context and its meaning in order to perform as well as possible on the task. Transformer models have a tendency to perform slightly better in such situations. I highly encourage you to read <a href="https://www.manning.com/books/deep-learning-with-python-second-edition?query=chollet" target="_blank" rel="noopener">François Chollet’s Deep Learning with Python, 2nd Ed.</a> to learn more about this and Deep Learning in NLP in general.</p>
+
+                <p>Although BERT might be the most famous Transformer model out there, I will choose an ALBERT architecture instead. It’s in many ways similar to BERT and differ mainly in that it shares parameters across layers. This leads to a lighter, faster to train and often more performant model. To save training time, we will additionally choose a smaller ALBERT architecture. Obviously, we will need to train the model on a GPU. GPUs often gives at least 10x speed-ups compared to CPUs for tasks like this due to parallelisation.</p>
+
+                <p>Although some of the features showed little correlation with the target variable, I will use them all. They might play more importance when “working” in combination with the other features. Additionally, they take up little space compared with the tweet text itself.</p>
+
+                <div class="quote-div-outer">
+                    <div class="quote-div-inner quote-text">
+                        <p>A very naive model that only predicts the largest class each time would get 57% accuracy. This will thus be our target to beat.</p>
+                    </div>
+                </div>
+
+                <p>First of all, we need to split the dataset into train and validation splits. Although we already have a test set, we can’t evaluate the model on it because it doesn’t have any labels. We should therefore split the train set into an additional third set; a test set. However, since the dataset is fairly small, we would likely need to implement cross validation in order to accurately assess the model performance. This will take quite a lot of time though (training a model once takes around 20 minutes on a free GPU, with 10-fold CV, we would spend over three hours on it, or 200 minutes). Although suboptimal, we will thus evaluate the model performance on the validation set only.</p>
+
+                <p>One way to prepare the data for a Transformer model when there’s both text, categorical and continuous columns, is to combine them all into one single column and separate them with the <span class="inline-code">[SEP]</span> token. We can also include this step in the pre-processing pipeline. In order to more clearly display the results, I will go with the first approach.</p>
+
+                <p>Using 🤗 Hugging Face’s <a href="https://multimodal-toolkit.readthedocs.io/en/latest/modules/model.html#module-multimodal_transformers.model.tabular_config" target="_blank" rel="noopener">TabularConfig</a> object also works very well when combining structured and unstructured data.</p>
+
+                <figure class="full-image figure-specs">
+                    <script src="https://gist.github.com/JakobLS/cee247e050a50bca2bbec933b04a4d13.js"></script>
+                </figure>
+
+                <p>Applying above and selecting only the resulting features (which are now all in the same column) and corresponding target, yields the following. Note how each individual feature is separated with the <span class="inline-code">[SEP]</span> token — a standardised token used in ALBERT.</p>
+
+                <figure class="full-image figure-specs">
+                    <a href="../images/fine-tune-transformer/final-dataset.png"><img class="full-image rounded-corners" src="../images/fine-tune-transformer/final-dataset.png" alt="All features combined with a [SEP] token separating each."></a>
+                    <figcaption class="figure-caption">All features combined with a <span class="inline-code">[SEP]</span> token separating each.</figcaption>
+                </figure>
+
+                <h3 class="top-margin-h3">Pre-processing Steps</h3>
+
+                <p>The ALBERT model needs some further pre-processing of the data. Among other things, each word needs to be tokenised while the sentence needs to be trimmed to the same length. The pre-processing step is downloaded from TensorFlow Hub and we can then combine it all in the following function.</p>
+
+                <figure class="full-image figure-specs">
+                    <script src="https://gist.github.com/JakobLS/d7227e8ffb3c40ac6bbe91fa3954872e.js"></script>
+                </figure>
+
+                <h3 class="top-margin-h3">Build the Model</h3>
+
+                <p>Next, define a function that leverages a pre-trained ALBERT model base. Make sure that we allow fine-tuning of it by specifying <span class="inline-code">trainable=True</span> and stack a single <span class="inline-code">Dense</span> layer on top which outputs one of two classes; <span class="inline-code">1</span> or <span class="inline-code">0</span>, representing disaster or non-disaster. Additionally, we can use a commonly used <span class="inline-code">Adam</span> optimiser that often works great out of the box.</p>
+
+                <p>To get a more holistic picture of the model’s performance, we measure three metrics; <span class="inline-code">accuracy</span>, <span class="inline-code">precision</span> and <span class="inline-code">recall</span> apart from the <span class="inline-code">loss</span>. We are extra interested in <span class="inline-code">precision</span> and <span class="inline-code">recall</span> since those metrics tell us how well the model classifies real disasters.</p>
+
+                <figure class="full-image figure-specs">
+                    <script src="https://gist.github.com/JakobLS/28a15be5dddddcac237eaf22d6830343.js"></script>
+                </figure>
+
+                <p>The resulting ALBERT model has 11.7 million parameters and looks as follow. Note the three inputs the model is expecting, the pre-trained model in the middle and the single output layer.</p>
+
+                <figure class="full-image figure-specs">
+                    <a href="../images/fine-tune-transformer/model-architecture.png"><img class="full-image rounded-corners" src="../images/fine-tune-transformer/model-architecture.png" alt="ALBERT model architecture."></a>
+                    <figcaption class="figure-caption">ALBERT model architecture.</figcaption>
+                </figure>
+
+                <h3 class="top-margin-h3">Data Loading and Model Fine-tuning</h3>
+
+                <p>Create a function for loading the dataset into the model in batches. It’s important to load the data in batches for memory reasons. Although it could be possible to load this rather small dataset into the GPU memory directly, a solution like that wouldn’t scale well as the data grows larger in size.</p>
+
+                <figure class="full-image figure-specs">
+                    <script src="https://gist.github.com/JakobLS/c0d02151cea1e70a9f9a9a68d4ce2f37.js"></script>
+                </figure>
+
+                <p>Next, we will specify model parameters and path, create the preprocessing model for data preprocessing and load the data in batches. We can use a <span class="inline-code">seq_length</span> of 145 characters to capture the whole length of over 99% of the tweets (143 is enough as we saw before, but 145 is a more even number). Longer sequence lengths lead to longer training times, but also potentially more performant models because more of the information in the tweet is captured.</p>
+
+                <p>Specify a model checkpoint that saves the best model based on validation accuracy during training. That way we can easily access the most performant model afterwards. Although a metric such as the F1 score might be more in-line with our goal, we will use validation accuracy as it’s easier to understand.</p>
+
+                <figure class="full-image figure-specs">
+                    <script src="https://gist.github.com/JakobLS/bd1d82388605d6ed8e84338fedbb727c.js"></script>
+                </figure>
+
+                <p>Lastly, initiate the model training/fine-tuning with previously defined parameters. Since we actually are fine-tuning the model, we don’t need, nor should, train it for long. I choose 5 epochs as it doesn’t take too long while it also seem to be enough for the performance to flatten out. Depending on the GPU you’re using, this will take different amount of time. In my case, using a free GPU, it took around 20 minutes.</p>
+
+                <figure class="full-image figure-specs">
+                    <script src="https://gist.github.com/JakobLS/e60672955773aa454ba5a60b89108247.js"></script>
+                </figure>
+
+                <hr>
+
+                <h2 class="top-margin-h2">Analysing Model Performance</h2>
+
+                <p>To get a holistic view of the model’s performance after each epoch, we can plot each metric at the end of each epoch on the train and validation data.</p>
+
+                <figure class="full-image figure-specs">
+                    <a href="../images/fine-tune-transformer/model-analysis.png"><img class="full-image rounded-corners" src="../images/fine-tune-transformer/model-analysis.png" alt="Loss, Accuracy, Precision and Recall on the train and validation sets over each one of the 5 epochs the model was trained on."></a>
+                    <figcaption class="figure-caption">Loss, Accuracy, Precision and Recall on the train and validation sets over each one of the 5 epochs the model was trained on.</figcaption>
+                </figure>
+
+                <p>Focusing on <span class="inline-code">val_accuracy</span>, we note that there’s a peak after the third epoch before it then declines slightly. It’s a fairly small dataset and we are only fine-tuning the model. Chances are that it starts overfitting after the third epoch even though we’re using a low learning rate which results in larger differences between the train and validation set in later epochs.</p>
+
+                <p>By loading the best performing model after three epochs, we can take a deeper look into its performance using a confusion matrix and a classification report.</p>
+
+                <div class="images-div-tiny">
+                    <figure class="full-image figure-specs">
+                        <a href="../images/fine-tune-transformer/confusion-matrix.png"><img class="full-image rounded-corners" src="../images/fine-tune-transformer/confusion-matrix.png" alt="Confusion Matrix at the 50% decision threshold."></a>
+                        <figcaption class="figure-caption">Confusion Matrix at the 50% decision threshold.</figcaption>
+                    </figure>
+                </div>
+
+                <div class="images-div">
+                    <figure class="full-image figure-specs">
+                        <a href="../images/fine-tune-transformer/classification-report.png"><img class="full-image rounded-corners" src="../images/fine-tune-transformer/classification-report.png" alt="Classification Report on the Validation Set."></a>
+                        <figcaption class="figure-caption">Classification Report on the Validation Set.</figcaption>
+                    </figure>
+                </div>
+
+                <p>We see that the model is doing fairly well in correctly predicting both real disasters and non-disasters. It correctly identifies 494 of the 638 disasters while also correctly identifying 753 non-disasters (out of 850). It does seem to do a little worse on real disaster tweets though. Although there’s surely still room for improvements, this first model does fairly well.</p>
+
+                <p>We could move forward by looking into the tweets the model fails on. The tweets might even be very hard for a human to correctly classify, they might have incorrect labels in the first place etc., which will negatively affect the model’s performance. There might also be a pattern among the tweets it is miss-classifying. If so, we could collect more tweets like that to improve the performance. As of now though, we’re happy with these results.</p>
+
+                <hr>
+
+                <h2 class="top-margin-h2">Summary</h2>
+
+                <p>Although there’s certainly more we can do in terms of building more features, experimenting with various text cleaning approaches, using more powerful models, analysing the results etc., etc., <i>we’ve already learned some interesting things when fine-tuning Transformer models on both structured and unstructured data</i>. Here’s a short summary of what we’ve done:</p>
+
+                <ul>
+                    <li>We’re only working with the train set since the test set doesn’t contain any labels. This results in around 7600 tweets.</li>
+                    <li>We only apply basic cleaning to keep as much as possible of the original information. For example, tweets that contain many spelling mistakes might less likely be written by journalists, and thus possibly less likely to be about real disasters. We use a third-party library to extract and normalise the locations in the <span class="inline-code">location</span> column. Much more work can be done on this though.</li>
+                    <li>We created a couple of new features in the hope to better separate the two classes. Although much more can be done here, we experimented with some new features such as <span class="inline-code">nbr_punctuations</span>, <span class="inline-code">tweet_length</span>, <span class="inline-code">avg_word_length</span>, <span class="inline-code">word_count</span>, <span class="inline-code">nbr_stopwords</span> and <span class="inline-code">nbr_hashtags</span>.</li>
+                    <li>Initial visual observations indicate that the distributions between the two target classes are fairly similar for the created features. The exception might be <span class="inline-code">avg_word_length</span>, where <span class="inline-code">Real Disaster</span> in general seem to have longer words which we hypothesised perhaps more frequently are written by journalists.</li>
+                    <li>The most frequent tweet length is around 140 characters, while the longest is 157. 99% are shorter than 143 characters.</li>
+                    <li>We use a pre-trained ALBERT base in our model to leverage its embeddings and to speed up training.</li>
+                    <li>By combining both structured (the engineered features) and unstructured data (the tweets), we attempted to boost the model performance.</li>
+                    <li>Although the model does slightly worse on real disaster tweets, an accuracy on the validation set of close to 84% is achieved.</li>
+                </ul>
+
+                <h3 class="top-margin-h3">Have feedback or want to connect?</h3>
+
+                <p>I’m open to feedback and thoughts of any kind. Leave a comment below or connect with me on <a href="https://www.linkedin.com/in/jakob-salomonsson-my-profile/" target="_blank" rel="noopener">LinkedIn</a> or my <a href="https://www.jakobsalomonsson.com" target="_blank" rel="noopener">personal website</a>.</p>
+
+                <div class="bottom-space">
+                </div>
+            </div>
+        </div>
+
+    </main>
+    <footer class="footer">
+      <div>
+      </div>
+    </footer>
+  </body>
+</html>
+
+
+
+
+
+
